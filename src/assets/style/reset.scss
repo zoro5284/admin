@@ -1,0 +1,113 @@
+// Reset.scss
+
+// 通用设置
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; // 边框和内边距包含在宽高内
+}
+
+// HTML 和 Body
+html {
+  font-size: 16px; // 基准字体大小，便于 rem 计算
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%; // 防止 iOS 缩放字体
+  -ms-overflow-style: scroll; // 确保滚动条始终正常显示
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #333; // 默认字体颜色
+  background-color: #fff; // 默认背景颜色
+  line-height: 1.6;
+}
+
+// 默认链接样式
+a {
+  text-decoration: none;
+  color: inherit; // 链接继承父级字体颜色
+}
+
+a:focus,
+a:hover {
+  text-decoration: underline; // 链接交互效果
+}
+
+// 图片与媒体
+img,
+video {
+  max-width: 100%;
+  height: auto; // 自适应高度
+  display: block; // 消除间隙问题
+}
+
+// 表单元素
+button,
+input,
+textarea,
+select {
+  font: inherit; // 继承父级字体
+  margin: 0;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer; // 鼠标悬停显示为手型
+  background: none; // 移除默认样式
+}
+
+textarea {
+  resize: none; // 禁止默认拉伸
+}
+
+// 表格
+table {
+  border-collapse: collapse; // 合并表格边框
+  width: 100%; // 默认表格宽度
+}
+
+th,
+td {
+  text-align: left; // 默认左对齐
+  padding: 8px;
+}
+
+// 列表
+ul,
+ol {
+  list-style: none; // 去掉默认列表样式
+}
+
+blockquote,
+q {
+  quotes: none; // 去掉默认的引用样式
+}
+
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: ''; // 防止内容中断
+}
+
+// 其他元素
+hr {
+  border: none; // 移除默认边框
+  border-top: 1px solid #ccc; // 添加轻微分隔线
+  margin: 1rem 0;
+}
+
+code,
+pre {
+  font-family: Consolas, 'Courier New', monospace; // 代码使用等宽字体
+  background-color: #f4f4f4;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+address {
+  font-style: normal; // 地址样式
+}
