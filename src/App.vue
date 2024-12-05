@@ -1,16 +1,9 @@
 <template>
-  <el-header class="main-header">this is a header</el-header>
-  <el-container class="menu-aside">
-    <el-aside width="200px">
-      <Menu />
-    </el-aside>
-    <div class="main-container">
-      <RouterView />
-    </div>
-  </el-container>
+  <router-view></router-view>
 </template>
 
 <script setup>
+import Layout from '@/components/Layout.vue'
 import Menu from '@/components/Menu.vue'
 const handleOpen = () => {}
 const handleClose = () => {}

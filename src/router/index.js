@@ -13,15 +13,29 @@ for (const path in modules) {
   routes.push(moduleRoute)
 }
 
+console.log('routes', routes)
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'Home',
-      component: () => import('@/views/home/Index.vue'),
+      path: '/login',
+      name: 'Login',
+      component: () => import('@/views/login/Index.vue'),
     },
-    ...routes,
+    {
+      path: '/',
+      name: 'Layout',
+      component: () => import('@/components/Layout.vue'),
+      children: [
+        {
+          path: '/home',
+          name: 'Home',
+          component: () => import('@/views/home/Index.vue'),
+        },
+        // ...routes,
+      ],
+    },
   ],
 })
 
