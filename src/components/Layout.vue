@@ -1,9 +1,12 @@
 <template>
   <div class="layout">
     <!-- Header -->
-    <el-header class="layout-header">
-      <div class="brand">Cyclinx</div>
-    </el-header>
+    <header class="header">
+      <div class="header-content">
+        <div class="logo-icon"></div>
+        <h1 class="logo-text">CYCLINX</h1>
+      </div>
+    </header>
 
     <!-- Main container -->
     <div class="layout-body">
@@ -24,20 +27,45 @@
 import Menu from './Menu.vue' // 引入菜单组件
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-.layout-header {
-  background-color: #ff9e00; /* 淡橘色 */
-  padding: 10px 20px;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
+/* Header部分 */
+.header {
+  padding: 20px 40px; /* 左右留白 */
+  background: linear-gradient(90deg, #ffa500, #ffcc80); /* 橘色渐变 */
   color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo图标 */
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: white; /* 占位颜色，可换为 logo 图片 */
+  border-radius: 50%; /* 圆形 logo */
+  margin-right: 20px; /* 与文字保持间距 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* CYCLINX文字 */
+.logo-text {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  flex-grow: 1;
+  text-align: left; /* 文字靠左对齐 */
 }
 
 .layout-body {

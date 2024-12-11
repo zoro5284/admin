@@ -12,7 +12,7 @@
         <i :class="item.icon"></i>
         <span>{{ item.title }}</span>
       </el-menu-item>
-      <el-submenu v-else :index="item.index">
+      <el-sub-menu v-else :index="item.index">
         <template #title>
           <i :class="item.icon"></i>
           <span>{{ item.title }}</span>
@@ -20,13 +20,13 @@
         <el-menu-item v-for="subItem in item.children" :key="subItem.index" :index="subItem.index">
           <span>{{ subItem.title }}</span>
         </el-menu-item>
-      </el-submenu>
+      </el-sub-menu>
     </template>
   </el-menu>
 </template>
 
 <script setup>
-export const menuConfig = [
+const menuConfig = [
   {
     title: '首页',
     index: '/',
@@ -59,7 +59,7 @@ export const menuConfig = [
 ]
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .el-menu-vertical-demo {
   border-right: none;
 }

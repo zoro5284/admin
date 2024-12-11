@@ -2,12 +2,7 @@
   <router-view></router-view>
 </template>
 
-<script setup>
-import Layout from '@/components/Layout.vue'
-import Menu from '@/components/Menu.vue'
-const handleOpen = () => {}
-const handleClose = () => {}
-</script>
+<script setup></script>
 <style lang="scss" scoped>
 .main-header {
   height: 100px;
