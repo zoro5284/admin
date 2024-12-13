@@ -20,14 +20,21 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import useApi from '@/api'
+
+const api = useApi()
+const router = useRouter()
 
 const form = ref({
   username: '',
   password: '',
 })
 
-const onLogin = () => {
+const onLogin = async () => {
   console.log('登录', form.value)
+  await api.base.login(form.value)
+  router.push('/home')
 }
 </script>
 
