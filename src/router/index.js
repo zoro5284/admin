@@ -10,7 +10,7 @@ for (const path in modules) {
       path: `/${moduleName}${item.path}`,
     }
   })
-  routes.push(moduleRoute)
+  routes.push(...moduleRoute)
 }
 
 const router = createRouter({
@@ -24,6 +24,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'Layout',
+      redirect: '/home',
       component: () => import('@/components/Layout.vue'),
       children: [
         {
@@ -31,7 +32,7 @@ const router = createRouter({
           name: 'Home',
           component: () => import('@/views/home/Index.vue'),
         },
-        // ...routes,
+        ...routes,
       ],
     },
   ],
