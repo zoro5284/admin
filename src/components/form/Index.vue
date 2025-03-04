@@ -8,22 +8,19 @@
     >
       <component
         :is="typeof field.component === 'string' ? componentMap[field.component] : field.component"
-        v-bind="field.elConfig"
+        v-bind="field.config"
         :modelValue="form[field.prop]"
         @update:modelValue="updateModelValue($event, field)"
       >
-        <template v-if="field.component === 'radio'">
-          <el-radio v-for="option in field.options" :value="option.value" :label="option.label">{{
-            option.label
-          }}</el-radio>
-        </template>
-        <template v-if="field.component === 'checkbox'">
-          <el-checkbox
-            v-for="option in field.options"
-            :value="option.value"
-            :label="option.label"
-            >{{ option.label }}</el-checkbox
-          >
+        <!-- 处理 ElRadio | ElSelect | ElOption-->
+        <template v-if="['radio', 'select', 'checkbox'].includes(field.component)">
+          <component
+            v-for="opt in field.options"
+            :is="slotComponentMap[field.component]"
+            :key="opt.value"
+            :value="opt.value"
+            :label="opt.label"
+          />
         </template>
       </component>
     </el-form-item>
@@ -33,82 +30,41 @@
 </template>
 <script setup>
 import { ref, h, reactive } from 'vue'
-import { ElCheckboxGroup, ElInput, ElRadioGroup } from 'element-plus'
+import {
+  ElCheckboxGroup,
+  ElCheckbox,
+  ElRadioGroup,
+  ElRadio,
+  ElSelect,
+  ElOption,
+  ElDatePicker,
+  ElInput,
+} from 'element-plus'
+import schema from './schema'
 
 const componentMap = {
   input: ElInput,
   radio: ElRadioGroup,
   checkbox: ElCheckboxGroup,
+  datePicker: ElDatePicker,
+  select: ElSelect,
 }
+
+const slotComponentMap = {
+  radio: ElRadio,
+  checkbox: ElCheckbox,
+  select: ElOption,
+}
+
 const emits = defineEmits(['onSubmit', 'onSubmitFailed', 'onCancel'])
 const props = defineProps({
   labelWidth: {
     type: String,
-    default: '80px',
+    default: '120px',
   },
   schema: {
     type: Array,
-    default: () => [
-      {
-        prop: 'first',
-        label: '第一个',
-        value: '111',
-        component: () => h('div', 'helloworld'),
-      },
-      {
-        prop: 'second',
-        label: '第二个',
-        component: 'input',
-        value: '222',
-        elConfig: {
-          type: 'textarea',
-          placeholder: '第二个默认值',
-          style: {
-            width: '200px',
-          },
-        },
-      },
-      {
-        prop: 'third',
-        label: '第三个',
-        component: 'radio',
-        value: '2',
-        options: [
-          {
-            value: '1',
-            label: 'radio1',
-          },
-          {
-            value: '2',
-            label: 'radio2',
-          },
-        ],
-      },
-      {
-        prop: 'fourth',
-        label: '第四个',
-        component: 'checkbox',
-        value: ['1', '3'],
-        options: [
-          {
-            value: '1',
-            label: 'checkbox1',
-          },
-          {
-            value: '2',
-            label: 'checkbox2',
-          },
-          {
-            value: '3',
-            label: 'checkbox3',
-          },
-          {
-            value: '4',
-            label: 'checkbox4',
-          },
-        ],
-      },
-    ],
+    default: () => schema,
   },
 })
 
@@ -142,6 +98,7 @@ const onSubmit = () => {
   if (!formRef.value) return
   formRef.value.validate((valid, field) => {
     if (valid) {
+      console.log('on-submit', form)
       emits('onSubmit', form)
     } else {
       emits('onSubmitFailed', field)
