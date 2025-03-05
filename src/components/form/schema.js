@@ -44,7 +44,7 @@ export default [
     prop: 'checkbox',
     label: 'CheckBox',
     component: 'checkbox',
-    value: ['1', '3'],
+    value: [],
     options: [
       {
         value: '1',
@@ -87,6 +87,7 @@ export default [
         width: '200px',
       },
     },
+    value: '1',
     options: [
       {
         value: '1',
@@ -105,5 +106,15 @@ export default [
         label: 'Select4',
       },
     ],
+  },
+  // ElUpload
+  {
+    prop: 'upload',
+    label: 'ElUpload',
+    component: 'upload',
+    value: [],
+    config: {
+      autoUpload: false,
+    },
   },
 ]
