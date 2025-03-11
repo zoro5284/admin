@@ -31,11 +31,13 @@
       type: String,
       default: '100px',
     },
-    defaultPosition: {
+    position: {
       type: Array,
       required: false,
     },
   })
+
+  const emits = defineEmits(['update:position'])
 
   const isUndef = (v) => !v && v !== 0
 
@@ -53,6 +55,7 @@
   const bindImageListener = async () => {
     await nextTick()
     previewImg.value = document.querySelector('.el-image-viewer__img')
+    previewImg.value.style.cursor = 'crosshair'
     useEventListener(previewImg.value, 'click', onPreviewClick)
   }
 
@@ -73,6 +76,7 @@
     // 计算相对坐标(相对图片真实像素)
     let xPixel = (mouseLeft - imgLeft) / ((width * scale) / naturalWidth)
     let yPixel = (imgBottom - mouseBottom) / ((height * scale) / naturalHeight)
+    emits('update:position', [xPixel, yPixel])
     markedUrl.value = await drawDotOnImage(xPixel, yPixel)
     // 替换图片后，重新对图片添加点击事件
     bindImageListener()
@@ -99,7 +103,7 @@
   }
 
   watch(
-    () => props.defaultPosition,
+    () => props.position,
     async (val) => {
       const [x, y] = val || []
       if (isUndef(x) && isUndef(y)) return

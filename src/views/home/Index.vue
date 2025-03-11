@@ -1,5 +1,5 @@
 <template>
-  <ImageMarkder :url="testPng" :default-position="[50, 50]" />
+  <ImageMarkder :url="testPng" v-model:position="position" />
   <!-- <div class="home-page">BTN</div> -->
 
   <!-- <Table :data="tableData" :columns="tableColumns" /> -->
@@ -10,7 +10,7 @@
   <div class="content" v-html="content"></div> -->
 </template>
 <script setup>
-  import { ref } from 'vue'
+  import { ref, watch } from 'vue'
   import Form from '@/components/form'
   import Editor from '@/components/editor'
   import Upload from '@/components/upload'
@@ -18,6 +18,10 @@
   import { mockData as tableData, mockCols as tableColumns } from '@/mock/table'
   import ImageMarkder from '@/components/image-marker'
   import testPng from '@/assets/img/test.png'
+  const position = ref([50, 50])
+  watch(position, (val) => {
+    console.log('position', val)
+  })
 </script>
 <style lang="scss" scoped>
   .content {
