@@ -34,10 +34,15 @@ const menuConfig = [
     children: [],
   },
   {
-    title: '用户管理',
-    index: '/users',
-    icon: 'el-icon-user',
-    children: [],
+    title: '产品管理',
+    index: '/product',
+    icon: 'el-icon-discount',
+    children: [
+      {
+        title: '品牌管理',
+        index: '/product/brand'
+      }
+    ]
   },
   {
     title: '系统设置',
