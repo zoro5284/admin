@@ -4,11 +4,11 @@
   </el-table>
   <el-pagination
     :style="{ 'justify-content': 'flex-end', 'margin-top': '10px' }"
-    v-model:current-page="currentPage"
+    :current-page="currentPage"
     :page-size="pageSize"
     :total="total"
-    :page-sizes="[10, 20, 50]"
-    :layout="'total, sizes, prev, pager, next, jumper'"
+    :page-sizes="pageSizes"
+    :layout="layout"
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
   ></el-pagination>
@@ -34,17 +34,32 @@
       type: Number,
       default: 50,
     },
+    pageSize: {
+      type: Number,
+      default: 10,
+    },
+    pageSizes: {
+      type: Array,
+      default: () => [10, 20, 50],
+    },
+    layout: {
+      type: String,
+      default: 'total, sizes, prev, pager, next, jumper',
+    },
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
   })
 
-  const currentPage = ref(1)
-  const pageSize = ref(10)
+  const emits = defineEmits(['update:pageSize', 'update:currentPage'])
 
   const handleSizeChange = (val) => {
-    console.log('size-change', val)
+    emits('update:pageSize', val)
   }
 
   const handleCurrentChange = (val) => {
-    console.log('current-change', val)
+    emits('update:currentPage', val)
   }
 </script>
 <style lang="scss" scoped></style>

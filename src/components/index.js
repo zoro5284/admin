@@ -1,1 +1,2 @@
-export { default as CommonSearch} from './common-search/index'
+export { default as CommonSearch } from './common-search/Index'
+export { default as Table } from './table/Index.vue'

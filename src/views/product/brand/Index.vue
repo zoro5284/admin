@@ -1,12 +1,27 @@
 <template>
   <div class="brand-page">
-    <CommonSearch v-model:form="searchForm" :schema="searchSchema" @search="onSearch" />
+    <el-card>
+      <!-- <CommonSearch v-model:form="searchForm" :schema="searchSchema" @search="onSearch" /> -->
+    </el-card>
+    <div class="btns">
+      <el-button class="btn" type="primary" @click="add">新增</el-button>
+      <el-button class="btn" type="primary">新增</el-button>
+    </div>
+    <el-card>
+      <Table
+        :data="tableData"
+        v-model:pageSize="paginationConfig.pageSize"
+        v-model:currentPage="paginationConfig.currentPage"
+        :total="paginationConfig.total"
+      />
+    </el-card>
   </div>
 </template>
 <script setup>
-  import { ref, reactive, computed, onMounted } from 'vue'
-  import { CommonSearch } from '@/components'
+  import { ref, watchEffect, reactive, computed, onMounted } from 'vue'
+  import { CommonSearch, Table } from '@/components'
 
+  // 搜索部分
   const searchSchema = [
     {
       label: '品牌名称',
@@ -41,6 +56,33 @@
   const onSearch = (val) => {
     console.log('on-search', searchForm.value)
   }
+
+  const add = () => {}
+
+  // 表格部分
+  const tableData = ref([])
+
+  const paginationConfig = ref({
+    pageSize: 10,
+    currentPage: 1,
+    total: 50,
+  })
+
+  watchEffect(() => {
+    const { pageSize, currentPage } = paginationConfig.value
+    console.log('get-list', pageSize, currentPage)
+  })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+  .brand-page {
+    .btns {
+      margin-top: 28px;
+      display: flex;
+      justify-content: flex-end;
+      .btn {
+        min-width: 88px;
+      }
+    }
+  }
+</style>
