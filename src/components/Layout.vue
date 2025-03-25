@@ -1,19 +1,19 @@
 <template>
   <div class="layout">
     <!-- Header -->
-    <header class="header">
+    <!-- <header class="header">
       <div class="header-content">
         <div class="logo-icon"></div>
         <h1 class="logo-text">CYCLINX</h1>
       </div>
-    </header>
+    </header> -->
 
     <!-- Main container -->
     <div class="layout-body">
       <!-- Aside (Sidebar Menu) -->
-      <el-aside width="200px" class="layout-aside">
+      <!-- <el-aside width="200px" class="layout-aside">
         <Menu />
-      </el-aside>
+      </el-aside> -->
 
       <!-- Main content area (Router View) -->
       <el-main class="layout-main">

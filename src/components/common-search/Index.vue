@@ -1,9 +1,16 @@
 <template>
   <div class="common-search__wrapper">
     <el-form ref="formRef" label-width="auto" inline>
-      <el-form-item v-for="(field, index) in schema" :key="index" :prop="field.prop" :label="field.label">
+      <el-form-item
+        v-for="(field, index) in schema"
+        :key="index"
+        :prop="field.prop"
+        :label="field.label"
+      >
         <component
-          :is="typeof field.component === 'string' ? componentMap[field.component] : field.component"
+          :is="
+            typeof field.component === 'string' ? componentMap[field.component] : field.component
+          "
           v-bind="field.config"
           :modelValue="form[field.prop]"
           @update:modelValue="updateModelValue($event, field)"
@@ -22,13 +29,13 @@
       </el-form-item>
     </el-form>
     <div class="btns">
-      <el-button type="primary" @click="$emit('search', form)">查询</el-button>
+      <el-button type="primary" @click="$emit('search')">查询</el-button>
       <el-button @click="reset">重置</el-button>
     </div>
   </div>
 </template>
 <script setup>
-  import { ref, reactive, computed, onMounted, watch } from 'vue';
+  import { ref, reactive, computed, onMounted, watch } from 'vue'
   import {
     ElCheckboxGroup,
     ElCheckbox,
@@ -59,52 +66,37 @@
   const props = defineProps({
     schema: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     form: {
       type: Object,
-      default: () => ({})
-    }
+      default: () => ({}),
+    },
   })
-  const emits = defineEmits(['reset', 'update', 'search'])
+  const emits = defineEmits(['reset', 'search', 'update:form'])
 
   const formRef = ref(null)
-  const form = reactive({})
 
   const updateModelValue = ($event, field) => {
-    form[field.prop] = $event
-    emits['update', form]
+    emits('update:form', { ...props.form, [field.prop]: $event })
   }
 
   const reset = () => {
     let empty = {}
-    Object.keys(form).forEach(key => {
+    Object.keys(props.form).forEach((key) => {
       empty[key] = undefined
     })
-    emits('update', empty)
-    emits('reset')
+    emits('update:form', empty)
   }
-
-  const init = () => {
-    Object.keys(props.form).forEach(key => {
-      form[key] = props.form[key]
-    })
-  }
-
-  watch(() => props.form, () => {
-    init()
-  }, { immediate: true, deep: true })
-
 </script>
-
 
 <style lang="scss" scoped>
   .common-search__wrapper {
-    ::v-deep .el-form-item__label{
+    ::v-deep .el-form-item__label {
       font-weight: bold;
     }
     display: flex;
-    .btns{
+    .btns {
       margin-left: 20px;
     }
   }

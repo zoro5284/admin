@@ -5,7 +5,6 @@ export default [
   {
     prop: 'custom',
     label: '自定义',
-    value: 'a',
     component: () => h('div', '自定义Comp'),
   },
   // Input
@@ -13,7 +12,6 @@ export default [
     prop: 'input',
     label: 'Input',
     component: 'input',
-    value: 'b',
     config: {
       //   type: 'textarea',
       placeholder: '这是一个input',
@@ -27,7 +25,6 @@ export default [
     prop: 'radio',
     label: 'Radio',
     component: 'radio',
-    value: '2',
     options: [
       {
         value: '1',
@@ -44,7 +41,6 @@ export default [
     prop: 'checkbox',
     label: 'CheckBox',
     component: 'checkbox',
-    value: [],
     options: [
       {
         value: '1',
@@ -69,7 +65,6 @@ export default [
     prop: 'datepicker',
     label: 'DatePicker',
     component: 'datePicker',
-    value: '2025-01-02',
     config: {
       type: 'date', // date\ datetime、month
       format: 'YYYY/MM/DD',
@@ -87,7 +82,6 @@ export default [
         width: '200px',
       },
     },
-    value: '1',
     options: [
       {
         value: '1',
@@ -112,7 +106,6 @@ export default [
     prop: 'upload',
     label: 'ElUpload',
     component: 'upload',
-    value: [],
     config: {
       autoUpload: false,
     },

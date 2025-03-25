@@ -1,9 +1,9 @@
 <template>
-  <ImageMarkder :url="testPng" v-model:position="position" />
+  <!-- <ImageMarkder :url="testPng" v-model:position="position" /> -->
   <!-- <div class="home-page">BTN</div> -->
 
   <!-- <Table :data="tableData" :columns="tableColumns" /> -->
-  <!-- <Form /> -->
+  <Form v-model:form="formObj" />
   <!-- <Upload /> -->
 
   <!-- <Editor v-model="content" />
@@ -21,6 +21,16 @@
   const position = ref([50, 50])
   watch(position, (val) => {
     console.log('position', val)
+  })
+
+  const formObj = ref({
+    custom: 'a',
+    input: 'input',
+    radio: '1',
+    checkbox: [],
+    datepicker: '2025-01-02',
+    select: [],
+    upload: [],
   })
 </script>
 <style lang="scss" scoped>
