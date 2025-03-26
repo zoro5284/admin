@@ -32,8 +32,10 @@
         </template>
       </component>
     </el-form-item>
-    <el-button type="primary" @click="onSubmit">提交</el-button>
-    <el-button @click="onCannel">取消</el-button>
+    <template v-if="footerVisible">
+      <el-button type="primary" @click="onSubmit">提交</el-button>
+      <el-button @click="onCannel">取消</el-button>
+    </template>
   </el-form>
 </template>
 <script setup>
@@ -50,7 +52,6 @@
     ElUpload,
   } from 'element-plus'
   import Upload from '@/components/upload/Index.vue'
-  import schema from './schema'
 
   const componentMap = {
     input: ElInput,
@@ -67,15 +68,19 @@
     select: ElOption,
   }
 
-  const emits = defineEmits(['onSubmit', 'onSubmitFailed', 'onCancel', 'update:form'])
+  const emits = defineEmits(['submit', 'submit-failed', 'cancel', 'update:form'])
   const props = defineProps({
+    footerVisible: {
+      type: Boolean,
+      default: true,
+    },
     labelWidth: {
       type: String,
       default: '120px',
     },
     schema: {
       type: Array,
-      default: () => schema,
+      default: () => [],
     },
     form: {
       type: Object,
@@ -122,6 +127,7 @@
         { required: true, message: `${field.label}不能为空`, trigger: 'blur' },
       ]
     })
+    console.log('form-rules', formRules)
   }
 
   // 初始化生成规则
@@ -136,15 +142,15 @@
     if (!formRef.value) return
     formRef.value.validate((valid, field) => {
       if (valid) {
-        emits('onSubmit', props.form)
+        emits('submit')
       } else {
-        emits('onSubmitFailed', field)
+        emits('submit-failed', field)
       }
     })
   }
 
   const onCannel = () => {
-    emits('onCancel')
+    emits('cancel')
   }
 </script>
 <style lang="less" scoped></style>
