@@ -33,7 +33,7 @@
       </component>
     </el-form-item>
     <template v-if="footerVisible">
-      <el-button type="primary" @click="onSubmit">提交</el-button>
+      <el-button type="primary" :style="{ marginLeft: '40px' }" @click="onSubmit">提交</el-button>
       <el-button @click="onCannel">取消</el-button>
     </template>
   </el-form>

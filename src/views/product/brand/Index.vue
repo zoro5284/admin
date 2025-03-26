@@ -5,7 +5,7 @@
     </el-card>
     <div class="btns">
       <el-button class="btn" type="primary" @click="dialogVisible = true">新增</el-button>
-      <el-button class="btn" type="primary">新增</el-button>
+      <el-button class="btn">新增</el-button>
     </div>
     <el-card>
       <Table
@@ -18,7 +18,7 @@
         :total="paginationConfig.total"
       />
     </el-card>
-    <el-dialog v-model="dialogVisible" width="auto">
+    <el-dialog v-model="dialogVisible" width="500px">
       <div>
         <Form
           :schema="addSchema"
