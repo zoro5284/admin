@@ -1,5 +1,6 @@
 <template>
-  <el-table :data="data" v-bind="config">
+  <el-table :data="data" v-bind="config" @selection-change="(v) => $emit('selection-change', v)">
+    <el-table-column v-if="selectable" type="selection" width="50" />
     <TableColumn v-for="column in columns" :key="column.prop" :column="column" />
   </el-table>
   <el-pagination
@@ -25,6 +26,10 @@
     config: {
       type: Object,
       default: () => ({}),
+    },
+    selectable: {
+      type: Boolean,
+      default: false,
     },
     columns: {
       type: Array,
@@ -52,7 +57,7 @@
     },
   })
 
-  const emits = defineEmits(['update:pageSize', 'update:currentPage'])
+  const emits = defineEmits(['update:pageSize', 'update:currentPage', 'selection-change'])
 
   const handleSizeChange = (val) => {
     emits('update:pageSize', val)

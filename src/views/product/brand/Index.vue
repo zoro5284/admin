@@ -3,19 +3,23 @@
     <el-card>
       <!-- <CommonSearch v-model:form="searchForm" :schema="searchSchema" @search="onSearch" /> -->
     </el-card>
-    <div class="btns">
-      <el-button class="btn" type="primary" @click="dialogVisible = true">新增</el-button>
-      <el-button class="btn">新增</el-button>
+    <div class="table-top">
+      <span class="title">TITLE</span>
+      <el-button class="btn1 btn" type="primary" @click="dialogVisible = true">新增</el-button>
+      <el-button class="btn">批量删除</el-button>
     </div>
     <el-card>
       <Table
         :data="tableData"
+        :columns="columns"
         :config="{
           style: { 'min-height': '500px' },
         }"
         v-model:pageSize="paginationConfig.pageSize"
         v-model:currentPage="paginationConfig.currentPage"
         :total="paginationConfig.total"
+        @selection-change="onSelectionChange"
+        selectable
       />
     </el-card>
     <el-dialog v-model="dialogVisible" width="500px">
@@ -31,8 +35,9 @@
   </div>
 </template>
 <script setup>
-  import { ref, watchEffect, reactive, computed, onMounted } from 'vue'
+  import { ref, watchEffect, reactive, computed, onMounted, h } from 'vue'
   import { CommonSearch, Table, Form } from '@/components'
+  import TableOperation from './components/TableOperation.vue'
 
   // 搜索部分
   const searchSchema = [
@@ -111,13 +116,63 @@
   const dialogVisible = ref(false)
 
   // 表格部分
-  const tableData = ref([])
+  const tableData = ref([
+    {
+      id: 1,
+      name: 'jzy',
+      age: 30,
+      test: '测试row',
+    },
+    {
+      id: 2,
+      name: 'jzy',
+      age: 30,
+      test: '测试row',
+    },
+  ])
+  const columns = [
+    {
+      prop: 'id',
+      label: 'ID',
+    },
+    {
+      prop: 'name',
+      label: '姓名',
+      formatter: (val) => {
+        return 'hello ' + val
+      },
+    },
+    {
+      prop: 'age',
+      label: '年龄',
+    },
+    {
+      prop: 'test',
+      label: '测试',
+    },
+    {
+      label: '操作',
+      columnRenderFn: ({ column, row }) => {
+        return h(TableOperation, {
+          onDelete: () => {
+            console.log('row-info', row)
+            console.log('this is delete action')
+          },
+        })
+      },
+    },
+  ]
 
   const paginationConfig = ref({
     pageSize: 10,
     currentPage: 1,
     total: 0,
   })
+
+  const selection = ref([])
+  const onSelectionChange = (selected) => {
+    selection.value = selected
+  }
 
   watchEffect(() => {
     const { pageSize, currentPage } = paginationConfig.value
@@ -126,14 +181,21 @@
 </script>
 
 <style lang="scss" scoped>
-  .brand-page {
-    .btns {
-      margin-top: 28px;
-      display: flex;
-      justify-content: flex-end;
-      .btn {
-        min-width: 88px;
-      }
+  .table-top {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    .title {
+      font-size: 16px;
+      font-weight: bold;
     }
+    .btn1 {
+      margin-left: auto;
+    }
+    .btn {
+      min-width: 88px;
+    }
+  }
+  .brand-page {
   }
 </style>

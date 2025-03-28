@@ -1,7 +1,8 @@
 <template>
   <el-table-column align="center" v-bind="omit(column, 'children')">
     <template v-if="!column.children" v-slot="{ row }">
-      <span v-if="column.formatter">
+      <component v-if="column.columnRenderFn" :is="column.columnRenderFn({ row, column })" />
+      <span v-else-if="column.formatter">
         {{ column.formatter(row[column.prop], row, column.prop) }}
       </span>
       <span v-else>{{ row[column.prop] }}</span>
