@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-title">基础信息</div>
       </template>
-      <Form v-model:form="formData" :schema="schema" @submit="onSubmit" @cancel="onCancel" />
+      <Form v-model:form="formData" :schema="schema" @submit="onSubmit" @cancel="toBrandList" />
     </el-card>
   </div>
 </template>
@@ -14,20 +14,25 @@
   import { alphabetArray } from '@/utils'
   import { ElMessage } from 'element-plus'
   import { useRoute, useRouter } from 'vue-router'
+  import useApi from '@/api'
+
   const router = useRouter()
+  const route = useRoute()
+  const api = useApi()
 
   const formData = ref({
-    key1: '',
-    key2: '',
-    key3: [],
-    key4: [],
-    key5: '',
+    brandId: '',
+    nameZh: '',
+    nameEn: '',
+    nameFirstLetter: [],
+    logo: [],
+    introduction: '',
   })
 
   const schema = [
     {
       label: '品牌中文名',
-      prop: 'key1',
+      prop: 'nameZh',
       component: 'input',
       rule: [{ required: false }],
       config: {
@@ -39,7 +44,7 @@
     },
     {
       label: '品牌英文名',
-      prop: 'key2',
+      prop: 'nameEn',
       component: 'input',
       rule: [{ required: false }],
       config: {
@@ -51,7 +56,7 @@
     },
     {
       label: '首字母',
-      prop: 'key3',
+      prop: 'nameFirstLetter',
       component: 'select',
       config: {
         placeholder: '请选择',
@@ -63,12 +68,12 @@
     },
     {
       label: '品牌logo',
-      prop: 'key4',
+      prop: 'logo',
       component: 'upload',
     },
     {
       label: '品牌简介',
-      prop: 'key5',
+      prop: 'introduction',
       component: 'input',
       config: {
         placeholder: '请输入',
@@ -80,25 +85,39 @@
     },
   ]
 
-  const onSubmit = () => {
-    if (!formData.key1 && !formData.key2) {
+  const onSubmit = async () => {
+    if (!formData.nameZh && !formData.nameEn) {
       ElMessage({
         message: '请输入品牌中文名或品牌英文名',
         type: 'warning',
       })
       return
     }
-    console.log('vlaidate', formData.value)
+    const params = {
+      ...formData.value,
+    }
+    await api.product.addBrand(params)
+    ElMessage({
+      message: `${formData.value.brandId ? '修改' : '新增'}品牌成功`,
+    })
+    toBrandList()
   }
 
-  const onCancel = () => {
+  const toBrandList = () => {
     router.push({
       path: '/product/brand',
     })
   }
 
+  const init = () => {
+    brandInfo = route.query.brandIndo ?? {}
+    Object.keys(formData.value).forEach((key) => {
+      formData.value[key] = brandIndo
+    })
+  }
+
   onMounted(() => {
-    console.log('Component mounted')
+    init()
   })
 </script>
 

@@ -24,7 +24,7 @@
         selectable
       />
     </el-card>
-    <SeriesDialog v-model:visible="dialogVisible" />
+    <SeriesDialog v-model:visible="dialogVisible" :brand-id="currentBrandId" />
   </div>
 </template>
 <script setup>
@@ -41,6 +41,7 @@
   const api = useApi()
 
   const dialogVisible = ref(false)
+  const currentBrandId = ref()
 
   // 搜索部分
   const searchSchema = [
@@ -81,7 +82,7 @@
       pageSize,
       pageNum,
     }
-    await api.product.queryBrandList(params, { method: 'GET' })
+    tableData.value = (await api.product.queryBrandList(params, { method: 'GET' })) ?? []
   }
 
   // 表格部分
@@ -111,12 +112,12 @@
       formatter: ({ scope }) => {
         // nameEn：英文名。nameZh: 中文名
         const {
-          row: { nameZh, nameEh },
+          row: { nameZh, nameEn },
         } = scope
-        if (nameZh && nameEh) {
-          return `${nameZh}(${nameEh})`
+        if (nameZh && nameEn) {
+          return `${nameZh}(${nameEn})`
         }
-        return nameZh || nameEh || '-'
+        return nameZh || nameEn || '-'
       },
     },
     {
@@ -159,7 +160,7 @@
         return h(TableOperation, {
           status,
           onEdit: () => {
-            toAddPage(id)
+            toAddPage(id, scope.row)
           },
           // 停用
           onStop: () => {
@@ -171,9 +172,10 @@
           },
           // 系列按钮
           onDetail: () => {
-            dialogVisible.value = true
+            currentBrandId.value = id
           },
           onDelete: () => {
+            if (!id) return
             deleteBrand([id])
           },
         })
@@ -200,11 +202,12 @@
     })
   }
 
-  const toAddPage = (id) => {
+  const toAddPage = (id, row) => {
     router.push({
       path: '/product/brand/add',
       query: {
         brandId: id,
+        brandInfo: row,
       },
     })
   }
