@@ -97,7 +97,8 @@
     }
     display: flex;
     .btns {
-      margin-left: 20px;
+      min-width: 200px;
+      margin-left: 28px;
     }
   }
 </style>

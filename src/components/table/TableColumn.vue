@@ -1,11 +1,11 @@
 <template>
   <el-table-column align="center" v-bind="omit(column, 'children')">
-    <template v-if="!column.children" v-slot="{ row }">
-      <component v-if="column.columnRenderFn" :is="column.columnRenderFn({ row, column })" />
+    <template v-if="!column.children" v-slot="scope">
+      <component v-if="column.columnRenderFn" :is="column.columnRenderFn({ scope, column })" />
       <span v-else-if="column.formatter">
-        {{ column.formatter(row[column.prop], row, column.prop) }}
+        {{ column.formatter({ scope, key: column.prop, value: scope.row[column.prop] }) }}
       </span>
-      <span v-else>{{ row[column.prop] }}</span>
+      <span v-else>{{ scope.row[column.prop] }}</span>
     </template>
     <!-- 处理子元素 -->
     <template v-if="column.children">

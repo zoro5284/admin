@@ -1,9 +1,10 @@
 <template>
   <el-table :data="data" v-bind="config" @selection-change="(v) => $emit('selection-change', v)">
-    <el-table-column v-if="selectable" type="selection" width="50" />
+    <el-table-column v-if="selectable" type="selection" width="30" />
     <TableColumn v-for="column in columns" :key="column.prop" :column="column" />
   </el-table>
   <el-pagination
+    v-if="usePagination"
     :style="{ 'justify-content': 'flex-end', 'margin-top': '10px' }"
     :current-page="currentPage"
     :page-size="pageSize"
@@ -34,6 +35,10 @@
     columns: {
       type: Array,
       default: () => [],
+    },
+    usePagination: {
+      type: Boolean,
+      default: true,
     },
     total: {
       type: Number,

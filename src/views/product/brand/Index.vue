@@ -1,19 +1,21 @@
 <template>
   <div class="brand-page">
     <el-card>
-      <!-- <CommonSearch v-model:form="searchForm" :schema="searchSchema" @search="onSearch" /> -->
+      <CommonSearch v-model:form="searchForm" :schema="searchSchema" @search="onSearch" />
     </el-card>
-    <div class="table-top">
-      <span class="title">TITLE</span>
-      <el-button class="btn1 btn" type="primary" @click="dialogVisible = true">新增</el-button>
-      <el-button class="btn">批量删除</el-button>
-    </div>
-    <el-card>
+    <el-card style="margin-top: 28px">
+      <div class="table-top">
+        <span class="title">品牌列表</span>
+        <el-button class="btn1 btn" type="primary" @click="toAddPage">新建</el-button>
+        <el-button class="btn" :disabled="selection.length < 2" @click="batchDelete">
+          批量删除
+        </el-button>
+      </div>
       <Table
         :data="tableData"
         :columns="columns"
         :config="{
-          style: { 'min-height': '500px' },
+          style: { 'min-height': '400px' },
         }"
         v-model:pageSize="paginationConfig.pageSize"
         v-model:currentPage="paginationConfig.currentPage"
@@ -22,22 +24,18 @@
         selectable
       />
     </el-card>
-    <el-dialog v-model="dialogVisible" width="500px">
-      <div>
-        <Form
-          :schema="addSchema"
-          v-model:form="addForm"
-          @submit="onSubmit"
-          @cancel="dialogVisible = false"
-        />
-      </div>
-    </el-dialog>
+    <SeriesDialog v-model:visible="dialogVisible" />
   </div>
 </template>
 <script setup>
   import { ref, watchEffect, reactive, computed, onMounted, h } from 'vue'
   import { CommonSearch, Table, Form } from '@/components'
   import TableOperation from './components/TableOperation.vue'
+  import SeriesDialog from './components/SeriesDialog.vue'
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
+
+  const dialogVisible = ref(false)
 
   // 搜索部分
   const searchSchema = [
@@ -75,46 +73,6 @@
     console.log('on-search', searchForm.value)
   }
 
-  // 新增表单部分
-  const addSchema = [
-    // Input
-    {
-      prop: 'addKey1',
-      label: 'Input',
-      component: 'input',
-      config: {
-        //   type: 'textarea',
-        placeholder: '这是一个input',
-        style: {
-          width: '200px',
-        },
-      },
-    },
-    // Radio
-    {
-      prop: 'addKey2',
-      label: 'Radio',
-      component: 'radio',
-      options: [
-        {
-          value: '1',
-          label: 'radio1',
-        },
-        {
-          value: '2',
-          label: 'radio2',
-        },
-      ],
-    },
-  ]
-
-  const addForm = ref({
-    addKey1: '1',
-    addKey2: '2',
-  })
-
-  const dialogVisible = ref(false)
-
   // 表格部分
   const tableData = ref([
     {
@@ -132,31 +90,57 @@
   ])
   const columns = [
     {
-      prop: 'id',
-      label: 'ID',
-    },
-    {
-      prop: 'name',
-      label: '姓名',
-      formatter: (val) => {
-        return 'hello ' + val
+      label: '序号',
+      formatter: ({ scope, key, value }) => {
+        return scope.$index + 1
       },
     },
     {
-      prop: 'age',
-      label: '年龄',
+      prop: 'name',
+      label: '品牌名称',
+      formatter: ({ scope, key, value }) => {
+        return 'hello ' + value
+      },
     },
     {
-      prop: 'test',
-      label: '测试',
+      prop: 'status',
+      label: '品牌状态',
+    },
+    {
+      prop: 'createDate',
+      label: '创建时间',
+    },
+    {
+      prop: 'updateDate',
+      label: '更新时间',
+    },
+    {
+      prop: 'updateBy',
+      label: '更新人',
     },
     {
       label: '操作',
-      columnRenderFn: ({ column, row }) => {
+      width: '300',
+      columnRenderFn: ({ scope, column }) => {
         return h(TableOperation, {
+          props: {
+            scope,
+          },
+          onEdit: () => {
+            console.log('on-edit')
+          },
+          onStop: () => {
+            console.log('on-stop')
+          },
+          onStart: () => {
+            console.log('on-start')
+          },
+          // 系列按钮
+          onDetail: () => {
+            dialogVisible.value = true
+          },
           onDelete: () => {
-            console.log('row-info', row)
-            console.log('this is delete action')
+            deleteBrand([scope.row.id])
           },
         })
       },
@@ -169,9 +153,24 @@
     total: 0,
   })
 
+  // 操作部分
+  const toAddPage = () => {
+    router.push({
+      path: '/product/brand/add',
+    })
+  }
+
   const selection = ref([])
   const onSelectionChange = (selected) => {
     selection.value = selected
+  }
+
+  const batchDelete = () => {
+    deleteBrand(selection.value.map((item) => item.id))
+  }
+
+  const deleteBrand = (list = []) => {
+    console.log('delete-brand', list)
   }
 
   watchEffect(() => {
@@ -181,12 +180,14 @@
 </script>
 
 <style lang="scss" scoped>
+  .brand-page {
+  }
   .table-top {
-    margin-top: 20px;
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
+    font-size: 16px;
     .title {
-      font-size: 16px;
       font-weight: bold;
     }
     .btn1 {
@@ -195,7 +196,5 @@
     .btn {
       min-width: 88px;
     }
-  }
-  .brand-page {
   }
 </style>

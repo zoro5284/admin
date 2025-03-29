@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="formRef" :model="form" label-width="80px" :rules="formRules">
+  <el-form ref="formRef" :model="form" :label-width="labelWidth" :rules="formRules">
     <el-form-item
       v-for="(field, index) in schema"
       :key="index"
@@ -32,10 +32,10 @@
         </template>
       </component>
     </el-form-item>
-    <template v-if="footerVisible">
+    <div v-if="footerVisible" style="margin-top: 38px; margin-left: 38px">
       <el-button type="primary" :style="{ marginLeft: '40px' }" @click="onSubmit">提交</el-button>
       <el-button @click="onCannel">取消</el-button>
-    </template>
+    </div>
   </el-form>
 </template>
 <script setup>
@@ -108,12 +108,12 @@
   const updateModelValue = async ($event, field) => {
     emits('update:form', { ...props.form, [field.prop]: $event })
     await nextTick()
-    // 数组更新值的时候，统一校验一次表单，清空红色部分
-    if (Array.isArray(props.form[field.prop])) {
-      formRef.value.validateField(field.prop).catch((err) => {
-        console.log('validate-field', err)
-      })
-    }
+    // 更新值的时候，统一校验一次表单，清空红色部分
+    // if (Array.isArray(props.form[field.prop])) {
+    formRef.value.validateField(field.prop).catch((err) => {
+      console.log('validate-field', err)
+    })
+    // }
   }
 
   // init

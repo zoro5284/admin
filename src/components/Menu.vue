@@ -26,46 +26,46 @@
 </template>
 
 <script setup>
-const menuConfig = [
-  {
-    title: '首页',
-    index: '/',
-    icon: 'el-icon-home',
-    children: [],
-  },
-  {
-    title: '产品管理',
-    index: '/product',
-    icon: 'el-icon-discount',
-    children: [
-      {
-        title: '品牌管理',
-        index: '/product/brand'
-      }
-    ]
-  },
-  {
-    title: '系统设置',
-    index: '/settings',
-    icon: 'el-icon-setting',
-    children: [
-      {
-        title: '权限设置',
-        index: '/settings/permissions',
-        children: [],
-      },
-      {
-        title: '角色设置',
-        index: '/settings/roles',
-        children: [],
-      },
-    ],
-  },
-]
+  const menuConfig = [
+    {
+      title: '首页',
+      index: '/',
+      icon: 'el-icon-home',
+      children: [],
+    },
+    {
+      title: '产品管理',
+      index: '/product',
+      icon: 'el-icon-discount',
+      children: [
+        {
+          title: '品牌管理',
+          index: '/product/brand',
+        },
+      ],
+    },
+    {
+      title: '系统设置',
+      index: '/settings',
+      icon: 'el-icon-setting',
+      children: [
+        {
+          title: '权限设置',
+          index: '/settings/permissions',
+          children: [],
+        },
+        {
+          title: '角色设置',
+          index: '/settings/roles',
+          children: [],
+        },
+      ],
+    },
+  ]
 </script>
 
 <style lang="scss" scoped>
-.el-menu-vertical-demo {
-  border-right: none;
-}
+  .el-menu-vertical-demo {
+    border-right: none;
+  }
 </style>
