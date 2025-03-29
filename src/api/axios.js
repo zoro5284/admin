@@ -1,5 +1,7 @@
 //  src/utils/request.ts
 import axios from 'axios'
+import { ElMessageBox } from 'element-plus'
+
 // import { useUserStoreHook } from '@/store/modules/user'
 
 // 创建 axios 实例
@@ -12,10 +14,10 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // const userStore = useUserStoreHook()
-    // if (userStore.token) {
-    //   config.headers.Authorization = userStore.token
-    // }
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = token
+    }
     return config
   },
   (error) => {
@@ -28,32 +30,32 @@ service.interceptors.response.use(
   (response) => {
     const silent = response.config.silent
     console.log('silent', silent, response.config)
-
-    // const { code, msg } = response.data
-    // // 登录成功
-    // if (code === '00000') {
-    //   return response.data
-    // }
+    const { code, msg } = response.data
+    // 正常返回
+    if (code === 0) {
+      return response.data
+    }
 
     // ElMessage.error(msg || '系统出错')
     // return Promise.reject(new Error(msg || 'Error'))
   },
   (error) => {
-    // if (error.response.data) {
-    // const { code, msg } = error.response.data
-    // token 过期，跳转登录页
-    // if (code === 'A0230') {
-    // ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
-    //   confirmButtonText: '确定',
-    //   type: 'warning',
-    // }).then(() => {
-    //   localStorage.clear() // @vueuse/core 自动导入
-    //   window.location.href = '/'
-    // })
-    // } else {
-    // ElMessage.error(msg || '系统出错')
-    // }
-    // }
+    if (error.response.data) {
+      const { code, msg } = error.response.data
+      // token 过期，跳转登录页
+      if (code === 10003) {
+        ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }).then(() => {
+          window.location.href = '/login'
+        })
+        // 其他报错情况  待完善
+      } else {
+        ElMessage.error(msg || '系统出错')
+      }
+    }
     return Promise.reject(error.message)
   },
 )

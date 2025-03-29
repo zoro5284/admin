@@ -1,3 +1,4 @@
 export default {
-  login: '/login.json',
+  login: '/user/login',
+  loginOut: '/user/loginOut',
 }
