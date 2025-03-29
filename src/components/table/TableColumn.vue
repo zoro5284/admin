@@ -5,7 +5,7 @@
       <span v-else-if="column.formatter">
         {{ column.formatter({ scope, key: column.prop, value: scope.row[column.prop] }) }}
       </span>
-      <span v-else>{{ scope.row[column.prop] }}</span>
+      <span v-else>{{ scope.row[column.prop] || '-' }}</span>
     </template>
     <!-- 处理子元素 -->
     <template v-if="column.children">

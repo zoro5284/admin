@@ -28,12 +28,17 @@
   </div>
 </template>
 <script setup>
-  import { ref, watchEffect, reactive, computed, onMounted, h } from 'vue'
+  import { ref, watch, reactive, computed, onMounted, h } from 'vue'
   import { CommonSearch, Table, Form } from '@/components'
   import TableOperation from './components/TableOperation.vue'
   import SeriesDialog from './components/SeriesDialog.vue'
   import { useRouter } from 'vue-router'
+  import useApi from '@/api'
+  import { dayjs } from 'dayjs'
+  import { ElMessage } from 'element-plus'
+
   const router = useRouter()
+  const api = useApi()
 
   const dialogVisible = ref(false)
 
@@ -41,7 +46,7 @@
   const searchSchema = [
     {
       label: '品牌名称',
-      prop: 'key2',
+      prop: 'name',
       component: 'input',
       config: {
         placeholder: '请输入品牌名称',
@@ -49,7 +54,7 @@
     },
     {
       label: '品牌状态',
-      prop: 'key1',
+      prop: 'state',
       component: 'select',
       config: {
         placeholder: '请选择品牌状态',
@@ -58,19 +63,25 @@
         },
       },
       options: [
-        { value: '1', label: '启用' },
-        { value: '2', label: '停用' },
+        { value: 0, label: '启用' },
+        { value: 1, label: '停用' },
       ],
     },
   ]
 
   const searchForm = ref({
-    key1: '1',
-    key2: '2',
+    name: '',
+    state: '',
   })
 
-  const onSearch = (val) => {
-    console.log('on-search', searchForm.value)
+  const onSearch = async () => {
+    const { pageSize, currentPage: pageNum } = paginationConfig.value
+    const params = {
+      ...searchForm.value,
+      pageSize,
+      pageNum,
+    }
+    await api.product.queryBrandList(params, { method: 'GET' })
   }
 
   // 表格部分
@@ -96,51 +107,74 @@
       },
     },
     {
-      prop: 'name',
       label: '品牌名称',
-      formatter: ({ scope, key, value }) => {
-        return 'hello ' + value
+      formatter: ({ scope }) => {
+        // nameEn：英文名。nameZh: 中文名
+        const {
+          row: { nameZh, nameEh },
+        } = scope
+        if (nameZh && nameEh) {
+          return `${nameZh}(${nameEh})`
+        }
+        return nameZh || nameEh || '-'
       },
     },
     {
       prop: 'status',
       label: '品牌状态',
+      columnRenderFn: ({ scope }) => {
+        const status = scope.row.status
+        if (status !== 0 && status !== 1) return h('span', null, '-')
+        const color = status === 0 ? '#407aff' : 'red'
+        const text = status === 0 ? '已启用' : '已停用'
+
+        return h('span', { style: { color } }, text)
+      },
     },
     {
-      prop: 'createDate',
+      prop: 'createTime',
       label: '创建时间',
+      formatter: ({ value }) => {
+        if (!value) return '-'
+        return dayjs(value).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
     {
-      prop: 'updateDate',
+      prop: 'updateTime',
       label: '更新时间',
+      formatter: ({ value }) => {
+        if (!value) return '-'
+        return dayjs(value).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
     {
-      prop: 'updateBy',
+      prop: 'operator',
       label: '更新人',
     },
     {
       label: '操作',
       width: '300',
       columnRenderFn: ({ scope, column }) => {
+        const { brandId: id, status } = scope.row
         return h(TableOperation, {
-          props: {
-            scope,
-          },
+          status,
           onEdit: () => {
-            console.log('on-edit')
+            toAddPage(id)
           },
+          // 停用
           onStop: () => {
-            console.log('on-stop')
+            updateState(id, 1)
           },
+          // 启用
           onStart: () => {
-            console.log('on-start')
+            updateState(id, 0)
           },
           // 系列按钮
           onDetail: () => {
             dialogVisible.value = true
           },
           onDelete: () => {
-            deleteBrand([scope.row.id])
+            deleteBrand([id])
           },
         })
       },
@@ -154,9 +188,24 @@
   })
 
   // 操作部分
-  const toAddPage = () => {
+  // 修改品牌状态
+  const updateState = async (id, state) => {
+    await api.product.updateState({
+      brandId: id,
+      state,
+    })
+    ElMessage({
+      message: '更新状态成功',
+      type: 'success',
+    })
+  }
+
+  const toAddPage = (id) => {
     router.push({
       path: '/product/brand/add',
+      query: {
+        brandId: id,
+      },
     })
   }
 
@@ -169,14 +218,20 @@
     deleteBrand(selection.value.map((item) => item.id))
   }
 
-  const deleteBrand = (list = []) => {
-    console.log('delete-brand', list)
+  const deleteBrand = async (list = []) => {
+    await api.product.deleteBrand({ brandIdList: list })
+    ElMessage({
+      message: '品牌删除成功',
+      type: 'success',
+    })
   }
 
-  watchEffect(() => {
-    const { pageSize, currentPage } = paginationConfig.value
-    console.log('get-list', pageSize, currentPage)
-  })
+  watch(
+    () => [paginationConfig.value.pageSize, paginationConfig.value.currentPage],
+    (val) => {
+      onSearch()
+    },
+  )
 </script>
 
 <style lang="scss" scoped>

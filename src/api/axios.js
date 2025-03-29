@@ -33,7 +33,7 @@ service.interceptors.response.use(
     const { code, msg } = response.data
     // 正常返回
     if (code === 0) {
-      return response.data
+      return promise.resolve(response.data)
     }
 
     // ElMessage.error(msg || '系统出错')
@@ -44,13 +44,13 @@ service.interceptors.response.use(
       const { code, msg } = error.response.data
       // token 过期，跳转登录页
       if (code === 10003) {
-        ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }).then(() => {
-          window.location.href = '/login'
-        })
+        // ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
+        //   confirmButtonText: '确定',
+        //   cancelButtonText: '取消',
+        //   type: 'warning',
+        // }).then(() => {
+        //   window.location.href = '/login'
+        // })
         // 其他报错情况  待完善
       } else {
         ElMessage.error(msg || '系统出错')
