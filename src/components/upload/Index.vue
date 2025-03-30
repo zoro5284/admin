@@ -12,23 +12,46 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+  import { ref } from 'vue'
+  import useApi from '@/api'
 
-const emits = defineEmits(['update:file-list'])
-const props = defineProps({
-  config: {
-    type: Object,
-    default: () => ({}),
-  },
-  fileList: {
-    type: Array,
-    default: () => [],
-  },
-})
+  const api = useApi()
 
-const uploadFileList = (v) => {
-  console.log('upload', v)
-  emits('update:file-list', v)
-}
+  const emits = defineEmits(['update:file-list'])
+  const props = defineProps({
+    config: {
+      type: Object,
+      default: () => ({}),
+    },
+    fileList: {
+      type: Array,
+      default: () => [],
+    },
+  })
+
+  const uploadFile = async (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const ret = await api.utils.uploadFile(formData, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return { url: ret.url }
+  }
+
+  const uploadFileList = async (fileList) => {
+    const promiseFileList = fileList.map((file) => {
+      if (file.url.startsWith('http')) {
+        return Promise.resolve(file)
+      } else {
+        return uploadFile(file.raw)
+      }
+    })
+
+    const list = await Promise.all(promiseFileList)
+    emits('update:file-list', list)
+  }
 </script>
 <style lang="scss" scoped></style>

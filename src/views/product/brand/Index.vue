@@ -1,12 +1,17 @@
 <template>
   <div class="brand-page">
     <el-card>
-      <CommonSearch v-model:form="searchForm" :schema="searchSchema" @search="onSearch" />
+      <CommonSearch
+        v-model:form="searchForm"
+        :schema="searchSchema"
+        @search="onSearch(true)"
+        @reset="onSearch(true)"
+      />
     </el-card>
     <el-card style="margin-top: 28px">
       <div class="table-top">
         <span class="title">品牌列表</span>
-        <el-button class="btn1 btn" type="primary" @click="toAddPage">新建</el-button>
+        <el-button class="btn1 btn" type="primary" @click="toAddPage()">新建</el-button>
         <el-button class="btn" :disabled="selection.length < 2" @click="batchDelete">
           批量删除
         </el-button>
@@ -24,7 +29,7 @@
         selectable
       />
     </el-card>
-    <SeriesDialog v-model:visible="dialogVisible" :brand-id="currentBrandId" />
+    <SeriesDialog v-model:visible="dialogVisible" :brand-info="currentBrandInfo" />
   </div>
 </template>
 <script setup>
@@ -34,14 +39,15 @@
   import SeriesDialog from './components/SeriesDialog.vue'
   import { useRouter } from 'vue-router'
   import useApi from '@/api'
-  import { dayjs } from 'dayjs'
+  import dayjs from 'dayjs'
   import { ElMessage } from 'element-plus'
+  import { generateBrandName } from './utils'
 
   const router = useRouter()
   const api = useApi()
 
   const dialogVisible = ref(false)
-  const currentBrandId = ref()
+  const currentBrandInfo = ref({})
 
   // 搜索部分
   const searchSchema = [
@@ -58,6 +64,7 @@
       prop: 'state',
       component: 'select',
       config: {
+        clearable: true,
         placeholder: '请选择品牌状态',
         style: {
           width: '200px',
@@ -65,7 +72,7 @@
       },
       options: [
         { value: 0, label: '启用' },
-        { value: 1, label: '停用' },
+        { value: 2, label: '停用' },
       ],
     },
   ]
@@ -75,31 +82,23 @@
     state: '',
   })
 
-  const onSearch = async () => {
-    const { pageSize, currentPage: pageNum } = paginationConfig.value
+  const onSearch = async (resetPage) => {
+    if (resetPage) {
+      paginationConfig.currentPage = 1
+    }
+    const { pageSize, currentPage: pageNum } = paginationConfig
     const params = {
       ...searchForm.value,
       pageSize,
       pageNum,
     }
-    tableData.value = (await api.product.queryBrandList(params, { method: 'GET' })) ?? []
+    const ret = (await api.product.queryBrandList(params, { method: 'GET' })) ?? []
+    tableData.value = ret.data
+    paginationConfig.total = ret.total
   }
 
   // 表格部分
-  const tableData = ref([
-    {
-      id: 1,
-      name: 'jzy',
-      age: 30,
-      test: '测试row',
-    },
-    {
-      id: 2,
-      name: 'jzy',
-      age: 30,
-      test: '测试row',
-    },
-  ])
+  const tableData = ref([])
   const columns = [
     {
       label: '序号',
@@ -114,20 +113,17 @@
         const {
           row: { nameZh, nameEn },
         } = scope
-        if (nameZh && nameEn) {
-          return `${nameZh}(${nameEn})`
-        }
-        return nameZh || nameEn || '-'
+        return generateBrandName(nameZh, nameEn)
       },
     },
     {
-      prop: 'status',
+      prop: 'state',
       label: '品牌状态',
       columnRenderFn: ({ scope }) => {
-        const status = scope.row.status
-        if (status !== 0 && status !== 1) return h('span', null, '-')
-        const color = status === 0 ? '#407aff' : 'red'
-        const text = status === 0 ? '已启用' : '已停用'
+        const state = scope.row.state
+        if (state !== 0 && state !== 2) return h('span', null, '-')
+        const color = state === 0 ? '#09cd8a' : '#fa1919'
+        const text = state === 0 ? '已启用' : '已停用'
 
         return h('span', { style: { color } }, text)
       },
@@ -156,15 +152,15 @@
       label: '操作',
       width: '300',
       columnRenderFn: ({ scope, column }) => {
-        const { brandId: id, status } = scope.row
+        const { brandId: id, state } = scope.row
         return h(TableOperation, {
-          status,
+          state,
           onEdit: () => {
             toAddPage(id, scope.row)
           },
           // 停用
           onStop: () => {
-            updateState(id, 1)
+            updateState(id, 2)
           },
           // 启用
           onStart: () => {
@@ -172,7 +168,8 @@
           },
           // 系列按钮
           onDetail: () => {
-            currentBrandId.value = id
+            currentBrandInfo.value = scope.row
+            dialogVisible.value = true
           },
           onDelete: () => {
             if (!id) return
@@ -183,7 +180,7 @@
     },
   ]
 
-  const paginationConfig = ref({
+  const paginationConfig = reactive({
     pageSize: 10,
     currentPage: 1,
     total: 0,
@@ -192,22 +189,31 @@
   // 操作部分
   // 修改品牌状态
   const updateState = async (id, state) => {
-    await api.product.updateState({
-      brandId: id,
-      state,
-    })
+    await api.product.updateBrandState(
+      {
+        brandId: id,
+        state,
+      },
+      { method: 'POST' },
+    )
     ElMessage({
       message: '更新状态成功',
       type: 'success',
     })
+    onSearch()
   }
 
   const toAddPage = (id, row) => {
+    if (!id) {
+      router.push({
+        path: '/product/brand/add',
+      })
+      return
+    }
     router.push({
       path: '/product/brand/add',
       query: {
         brandId: id,
-        brandInfo: row,
       },
     })
   }
@@ -218,21 +224,25 @@
   }
 
   const batchDelete = () => {
-    deleteBrand(selection.value.map((item) => item.id))
+    deleteBrand(selection.value.map((item) => item.brandId))
   }
 
   const deleteBrand = async (list = []) => {
-    await api.product.deleteBrand({ brandIdList: list })
+    await api.product.deleteBrand({ brandIdList: list }, { method: 'POST' })
     ElMessage({
       message: '品牌删除成功',
       type: 'success',
     })
+    onSearch(true)
   }
 
   watch(
-    () => [paginationConfig.value.pageSize, paginationConfig.value.currentPage],
+    () => [paginationConfig.pageSize, paginationConfig.currentPage],
     (val) => {
       onSearch()
+    },
+    {
+      immediate: true,
     },
   )
 </script>

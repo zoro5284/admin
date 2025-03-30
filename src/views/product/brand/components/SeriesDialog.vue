@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     class="series-dialog"
-    title="系列管理"
+    :title="dialogTitle1"
     :model-value="props.visible"
     :style="{
       minHeight: '300px',
@@ -18,7 +18,7 @@
       </el-button>
     </div>
   </el-dialog>
-  <el-dialog title="新增系列" v-model="addDialogVisible">
+  <el-dialog :title="dialogTitle2" v-model="addDialogVisible">
     <Form
       :schema="seriesSchema"
       v-model:form="seriesForm"
@@ -33,6 +33,11 @@
   import Icon from './Icon.vue'
   import { Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+  import useApi from '@/api'
+  import { generateBrandName } from '../utils'
+  import { omit } from 'lodash-es'
+
+  const api = useApi()
 
   const emit = defineEmits(['update:visible'])
   const props = defineProps({
@@ -40,9 +45,9 @@
       type: Boolean,
       default: false,
     },
-    brandId: {
-      type: [Number, String],
-      required: true,
+    brandInfo: {
+      type: Object,
+      required: () => ({}),
     },
   })
 
@@ -76,7 +81,7 @@
               {
                 background: '#407aFF',
                 onClick: () => {
-                  handleEditSeries(scope.row)
+                  handleEditSeries(id)
                 },
               },
               { default: () => h(Edit) },
@@ -110,16 +115,24 @@
   // 新增系列
   const addSeries = () => {
     resetSeriesForm()
+    seriesForm.value.brandName = generateBrandName(props.brandInfo.nameZh, props.brandInfo.nameEn)
     addDialogVisible.value = true
   }
 
   // 编辑系列
-  const handleEditSeries = async (row) => {
+  const handleEditSeries = async (id) => {
     resetSeriesForm()
+    const ret = await api.product.getSeriesInfo({ seriesId: id })
     // 根据系列id赋值
-    Object.keys(seriesForm).forEach((key) => {
-      seriesForm[key] = row[key]
+    Object.keys(seriesForm.value).forEach((key) => {
+      if (key === 'brandName') {
+        seriesForm.value[key] = generateBrandName(props.brandInfo.nameZh, props.brandInfo.nameEn)
+        return
+      }
+      seriesForm.value[key] = ret[key]
     })
+    console.log('seriesForm', ret, seriesForm.value)
+
     addDialogVisible.value = true
   }
 
@@ -128,7 +141,7 @@
     const params = {
       seriesIdList: list,
     }
-    await api.product.deleteSeries(params, { method: 'GET' })
+    await api.product.deleteSeries(params, { method: 'POST' })
     ElMessage({
       message: '删除系列成功',
       type: 'success',
@@ -142,10 +155,12 @@
   const seriesSchema = [
     {
       label: '品牌名',
-      prop: 'key1',
+      prop: 'brandName',
       component: 'input',
       config: {
+        rules: [{ required: false }],
         placeholder: '请输入',
+        disabled: true,
         style: {
           width: '300px',
         },
@@ -178,24 +193,34 @@
 
   const seriesForm = ref({
     seriesId: '',
+    brandName: '',
     name: '',
-    seriesForm: '',
+    introduction: '',
+  })
+  const dialogTitle1 = computed(() => {
+    return '系列管理 > ' + generateBrandName(props.brandInfo.nameZh, props.brandInfo.nameEn)
+  })
+  const dialogTitle2 = computed(() => {
+    const { seriesId } = seriesForm.value
+    return seriesId ? '修改系列' : '新增系列'
   })
 
   const onSubmit = async () => {
     const params = {
       ...seriesForm.value,
+      brandId: props.brandInfo.brandId,
     }
-    await api.product.addSeries(params, { method: 'GET' })
+    await api.product.addSeries(params, { method: 'POST' })
     ElMessage({
       message: `${seriesForm.value.seriesId ? '修改' : '新增'}系列成功`,
+      type: 'success',
     })
     addDialogVisible.value = false
   }
 
   const init = async () => {
     const params = {
-      brandId: props.brandId,
+      brandId: props.brandInfo.brandId,
     }
     tableData.value = await api.product.querySeriesList(params, { method: 'GET' })
   }

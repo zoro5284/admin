@@ -12,10 +12,6 @@
       default: 'red',
     },
   })
-
-  onMounted(() => {
-    console.log('Component mounted')
-  })
 </script>
 
 <style lang="scss" scoped>

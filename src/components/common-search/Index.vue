@@ -87,6 +87,7 @@
       empty[key] = undefined
     })
     emits('update:form', empty)
+    emits('reset')
   }
 </script>
 

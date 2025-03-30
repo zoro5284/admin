@@ -12,13 +12,13 @@
 
   defineEmits(['edit', 'stop', 'start', 'delete', 'detail'])
   const props = defineProps({
-    status: {
-      type: Object,
-      default: () => ({}),
+    state: {
+      type: Number,
+      default: -1,
     },
   })
 
-  const isShowStart = computed(() => props.status === 1)
-  const isShowStop = computed(() => props.status === 0)
+  const isShowStart = computed(() => props.state === 2)
+  const isShowStop = computed(() => props.state === 0)
 </script>
 <style lang="less" scoped></style>
