@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="login-page" @keydown.enter="onLogin">
     <div class="brand-name">Cyclinx</div>
     <div class="login-box">
       <h2>登录</h2>
@@ -11,7 +11,7 @@
           <el-input v-model="form.password" type="password" placeholder="请输入密码" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onLogin">登录</el-button>
+          <el-button type="primary" :disabled="isDisabled" @click="onLogin">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { reactive, computed } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import useApi from '@/api'
 
@@ -27,17 +27,21 @@
   const router = useRouter()
   const route = useRoute()
 
-  const form = ref({
+  const form = reactive({
     userName: '',
     password: '',
   })
 
   const onLogin = async () => {
-    console.log('登录', form.value, router, route)
-    const { token } = (await api.base.login(form.value, { method: 'POST' })) ?? {}
-    localStorage.setItem('token', token)
+    if (isDisabled.value) return
+    const res = (await api.base.login(form, { method: 'POST' })) ?? {}
+    localStorage.setItem('token', res?.token)
     router.push('/home')
   }
+
+  const isDisabled = computed(() => {
+    return !form.userName || !form.password
+  })
 </script>
 
 <style scoped>

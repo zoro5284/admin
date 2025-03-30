@@ -30,11 +30,17 @@ service.interceptors.response.use(
   (response) => {
     const silent = response.config.silent
     console.log('silent', silent, response.config)
-    const { code, msg } = response.data
+    const { code, msg, data } = response.data
+    console.log('response', response.data)
     // 正常返回
     if (code === 0) {
-      return promise.resolve(response.data)
+      return Promise.resolve(data)
     }
+    ElMessage({
+      message: msg,
+      type: 'error',
+    })
+    return Promise.reject(data)
 
     // ElMessage.error(msg || '系统出错')
     // return Promise.reject(new Error(msg || 'Error'))

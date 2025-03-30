@@ -3,7 +3,7 @@
   <!-- <div class="home-page">BTN</div> -->
 
   <!-- <Table :data="tableData" :columns="tableColumns" /> -->
-  <Form v-model:form="formObj" />
+  <!-- <Form v-model:form="formObj" /> -->
   <!-- <Upload /> -->
 
   <!-- <Editor v-model="content" />

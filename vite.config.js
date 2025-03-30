@@ -45,4 +45,13 @@ export default defineConfig({
     },
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.vue'],
   },
+  server: {
+    proxy: {
+      '/gateway': {
+        target: 'http://2izsat.natappfree.cc',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/gateway/, ''),
+      },
+    },
+  },
 })

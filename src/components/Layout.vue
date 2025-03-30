@@ -9,7 +9,7 @@
         <!-- 用户名下拉菜单 -->
         <el-dropdown class="user-menu" @command="handleCommand">
           <span class="user-name">
-            {{ username }}
+            {{ userInfo.userName }}
             <el-icon><ArrowDown /></el-icon>
           </span>
           <template #dropdown>
@@ -37,27 +37,39 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { ArrowDown } from '@element-plus/icons-vue'
   import Menu from './Menu.vue' // 引入菜单组件
   import useApi from '@/api'
+  import { method } from 'lodash-es'
 
   const api = useApi()
 
   const router = useRouter()
-  const username = ref('Admin') // 假设用户名
+  const userInfo = reactive({
+    profilePhoto: '',
+    userName: '',
+    userId: '',
+  })
 
   // 处理下拉菜单点击
   const handleCommand = async (command) => {
     if (command === 'logout') {
-      console.log('执行退出操作...')
-      await api.base.loginOut()
+      await api.base.logout({}, { method: 'POST' })
       localStorage.removeItem('token')
       // 跳转到登录页
       router.push('/login')
     }
   }
+
+  const init = async () => {
+    const { profilePhoto, userName, userId } = (await api.base.getUserInfo()) ?? {}
+    userInfo.profilePhoto = profilePhoto
+    userInfo.userName = userName
+    userInfo.userId = userId
+  }
+  init()
 </script>
 
 <style lang="scss" scoped>
