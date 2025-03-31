@@ -1,5 +1,5 @@
 <template>
-  <div class="brand-page">
+  <div class="category-page">
     <el-card>
       <CommonSearch
         v-model:form="searchForm"
@@ -10,7 +10,7 @@
     </el-card>
     <el-card style="margin-top: 28px">
       <div class="table-top">
-        <span class="title">品牌列表</span>
+        <span class="title">类目列表</span>
         <el-button class="btn1 btn" type="primary" @click="toAddPage()">新建</el-button>
         <el-button class="btn" :disabled="selection.length < 2" @click="batchDelete">
           批量删除
@@ -29,43 +29,37 @@
         selectable
       />
     </el-card>
-    <SeriesDialog v-model:visible="dialogVisible" :brand-info="currentBrandInfo" />
   </div>
 </template>
 <script setup>
   import { ref, watch, reactive, computed, onMounted, h } from 'vue'
   import { CommonSearch, Table, Form } from '@/components'
   import TableOperation from './components/TableOperation.vue'
-  import SeriesDialog from './components/SeriesDialog.vue'
   import { useRouter } from 'vue-router'
   import useApi from '@/api'
   import dayjs from 'dayjs'
   import { ElMessage } from 'element-plus'
-  import { generateBrandName } from './utils'
 
   const router = useRouter()
   const api = useApi()
 
-  const dialogVisible = ref(false)
-  const currentBrandInfo = ref({})
-
   // 搜索部分
   const searchSchema = [
     {
-      label: '品牌名称',
+      label: '类目名称',
       prop: 'name',
       component: 'input',
       config: {
-        placeholder: '请输入品牌名称',
+        placeholder: '请输入类目名称',
       },
     },
     {
-      label: '品牌状态',
+      label: '类目状态',
       prop: 'state',
       component: 'select',
       config: {
         clearable: true,
-        placeholder: '请选择品牌状态',
+        placeholder: '请选择类目状态',
         style: {
           width: '200px',
         },
@@ -92,7 +86,7 @@
       pageSize,
       pageNum,
     }
-    const ret = (await api.product.queryBrandList(params, { method: 'GET' })) ?? []
+    const ret = (await api.product.queryCategoryList(params, { method: 'GET' })) ?? []
     tableData.value = ret.data
     paginationConfig.total = ret.total
   }
@@ -107,18 +101,12 @@
       },
     },
     {
-      label: '品牌名称',
-      formatter: ({ scope }) => {
-        // nameEn：英文名。nameZh: 中文名
-        const {
-          row: { nameZh, nameEn },
-        } = scope
-        return generateBrandName(nameZh, nameEn)
-      },
+      prop: 'name',
+      label: '类目名称',
     },
     {
       prop: 'state',
-      label: '品牌状态',
+      label: '类目状态',
       columnRenderFn: ({ scope }) => {
         const state = scope.row.state
         if (state !== 0 && state !== 2) return h('span', null, '-')
@@ -152,7 +140,7 @@
       label: '操作',
       width: '300',
       columnRenderFn: ({ scope, column }) => {
-        const { brandId: id, state } = scope.row
+        const { categoryId: id, state } = scope.row
         return h(TableOperation, {
           state,
           onEdit: () => {
@@ -166,14 +154,9 @@
           onStart: () => {
             updateState(id, 0)
           },
-          // 系列按钮
-          onDetail: () => {
-            currentBrandInfo.value = scope.row
-            dialogVisible.value = true
-          },
           onDelete: () => {
             if (!id) return
-            deleteBrand([id])
+            deleteCategory([id])
           },
         })
       },
@@ -187,11 +170,11 @@
   })
 
   // 操作部分
-  // 修改品牌状态
+  // 修改类目状态
   const updateState = async (id, state) => {
-    await api.product.updateBrandState(
+    await api.product.updateCategoryState(
       {
-        brandId: id,
+        categoryId: id,
         state,
       },
       { method: 'POST' },
@@ -206,14 +189,14 @@
   const toAddPage = (id, row) => {
     if (!id) {
       router.push({
-        path: '/product/brand/add',
+        path: '/product/category/add',
       })
       return
     }
     router.push({
-      path: '/product/brand/add',
+      path: '/product/category/add',
       query: {
-        brandId: id,
+        categoryId: id,
       },
     })
   }
@@ -224,13 +207,13 @@
   }
 
   const batchDelete = () => {
-    deleteBrand(selection.value.map((item) => item.brandId))
+    deleteCategory(selection.value.map((item) => item.categoryId))
   }
 
-  const deleteBrand = async (list = []) => {
-    await api.product.deleteBrand({ brandIdList: list }, { method: 'POST' })
+  const deleteCategory = async (list = []) => {
+    await api.product.deleteCategory({ categoryIdList: list }, { method: 'POST' })
     ElMessage({
-      message: '品牌删除成功',
+      message: '类目删除成功',
       type: 'success',
     })
     onSearch(true)
@@ -248,21 +231,21 @@
 </script>
 
 <style lang="scss" scoped>
-  .brand-page {
-  }
-  .table-top {
-    margin-bottom: 18px;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    .title {
-      font-weight: bold;
-    }
-    .btn1 {
-      margin-left: auto;
-    }
-    .btn {
-      min-width: 88px;
+  .category-page {
+    .table-top {
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      .title {
+        font-weight: bold;
+      }
+      .btn1 {
+        margin-left: auto;
+      }
+      .btn {
+        min-width: 88px;
+      }
     }
   }
 </style>

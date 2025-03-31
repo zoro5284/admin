@@ -34,7 +34,7 @@
   import { Edit, Delete } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import useApi from '@/api'
-  import { generateBrandName } from '../utils'
+  import { generateBrandName } from '../../utils'
   import { omit } from 'lodash-es'
 
   const api = useApi()

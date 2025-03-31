@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-title">基础信息</div>
       </template>
-      <Form v-model:form="formData" :schema="schema" @submit="onSubmit" @cancel="toBrandList" />
+      <Form v-model:form="formData" :schema="schema" @submit="onSubmit" @cancel="toCategoryList" />
     </el-card>
   </div>
 </template>
@@ -20,22 +20,18 @@
   const route = useRoute()
   const api = useApi()
 
-  const brandId = ref()
+  const categoryId = ref()
   const formData = ref({
-    brandId: '',
-    nameZh: '',
-    nameEn: '',
-    nameFirstLetter: [],
-    logo: [],
+    name: '',
     introduction: '',
+    upperCategoryId: '',
   })
 
   const schema = [
     {
-      label: '品牌中文名',
-      prop: 'nameZh',
+      label: '名称',
+      prop: 'name',
       component: 'input',
-      rule: [{ required: false }],
       config: {
         placeholder: '请输入',
         style: {
@@ -44,39 +40,7 @@
       },
     },
     {
-      label: '品牌英文名',
-      prop: 'nameEn',
-      component: 'input',
-      rule: [{ required: false }],
-      config: {
-        placeholder: '请输入',
-        style: {
-          width: '300px',
-        },
-      },
-    },
-    {
-      label: '首字母',
-      prop: 'nameFirstLetter',
-      component: 'select',
-      config: {
-        placeholder: '请选择',
-        style: {
-          width: '300px',
-        },
-      },
-      options: alphabetArray.map((i) => ({ label: i, value: i })),
-    },
-    {
-      label: '品牌logo',
-      prop: 'logo',
-      component: 'upload',
-      config: {
-        limit: 1,
-      },
-    },
-    {
-      label: '品牌简介',
+      label: '描述',
       prop: 'introduction',
       component: 'input',
       config: {
@@ -88,43 +52,54 @@
         },
       },
     },
+    {
+      label: '上级类目',
+      props: 'upperCategoryId',
+      component: 'select',
+      config: {
+        placeholder: '请选择',
+        style: {
+          width: '300px',
+        },
+      },
+      options: [
+        {
+          value: '1',
+          label: '1',
+        },
+        {
+          value: '2',
+          label: '2',
+        },
+      ],
+    },
   ]
 
   const onSubmit = async () => {
     const params = {
       ...formData.value,
-      logo: formData.value.logo[0]?.url,
     }
-    if (!params.nameZh && !params.nameEn) {
-      ElMessage({
-        message: '请输入品牌中文名或品牌英文名',
-        type: 'warning',
-      })
-      return
-    }
-    await api.product.addBrand(params, { method: 'POST' })
+    await api.product.addCategory(params, { method: 'POST' })
     ElMessage({
-      message: `${brandId.value ? '修改' : '新增'}品牌成功`,
+      message: `${categoryId.value ? '修改' : '新增'}类目成功`,
       type: 'success',
     })
-    toBrandList()
+    toCategoryList()
   }
 
-  const toBrandList = () => {
+  const toCategoryList = () => {
     router.push({
       path: '/product/brand',
     })
   }
 
   const init = async () => {
-    brandId.value = route.query.brandId
-    if (brandId.value) {
-      const ret = await api.product.getBrandInfo({ brandId })
+    // 生成上级类目OPTIONS TODO
+
+    categoryId.value = route.query.categoryId
+    if (categoryId.value) {
+      const ret = await api.product.getCategoryInfo({ categoryId: categoryId.value })
       Object.keys(formData.value).forEach((key) => {
-        if (key === 'logo') {
-          formData.value[key] = [{ url: ret?.logo }]
-          return
-        }
         ret[key] && (formData.value[key] = ret[key])
       })
       console.log('ret', formData.value)
