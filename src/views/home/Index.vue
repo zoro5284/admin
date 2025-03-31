@@ -1,4 +1,5 @@
 <template>
+  WELCOME
   <!-- <ImageMarkder :url="testPng" v-model:position="position" /> -->
   <!-- <div class="home-page">BTN</div> -->
 

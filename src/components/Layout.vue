@@ -1,10 +1,10 @@
 <template>
-  <!-- <div class="layout">
+  <div class="layout">
     <header class="header">
       <div class="header-content">
         <div class="logo-icon"></div>
         <h1 class="logo-text">CYCLINX</h1>
-        <el-dropdown class="user-menu" @command="handleCommand">
+        <el-dropdown class="user-menu" @command="handleCommand" v-if="userName">
           <span class="user-name">
             {{ userInfo.userName }}
             <el-icon><ArrowDown /></el-icon>
@@ -24,18 +24,19 @@
       </el-aside>
 
       <el-main class="layout-main">
+        <Breadcrumb />
         <router-view />
       </el-main>
     </div>
-  </div> -->
-  <div class="layout">
+  </div>
+  <!-- <div class="layout">
     <div class="layout-body">
       <el-main class="layout-main">
         <Breadcrumb />
         <router-view />
       </el-main>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup>
@@ -86,7 +87,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between; /* 左右对齐 */
-    padding: 20px 40px;
+    padding: 18px 40px;
     background: linear-gradient(90deg, #ffa500, #ffcc80);
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -132,7 +133,7 @@
   }
 
   .logo-text {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: bold;
     margin: 0;
     text-transform: uppercase;

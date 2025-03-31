@@ -1,6 +1,6 @@
 <template>
   <el-menu
-    default-active="/"
+    :default-active="route.path"
     class="el-menu-vertical-demo"
     background-color="#ffffff"
     text-color="#333"
@@ -26,10 +26,12 @@
 </template>
 
 <script setup>
+  import { useRoute } from 'vue-router'
+  const route = useRoute()
   const menuConfig = [
     {
       title: '首页',
-      index: '/',
+      index: '/home',
       icon: 'el-icon-home',
       children: [],
     },
