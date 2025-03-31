@@ -48,6 +48,10 @@
           title: '类目管理',
           index: '/product/category',
         },
+        {
+          title: '型号管理',
+          index: '/product/model',
+        },
       ],
     },
   ]

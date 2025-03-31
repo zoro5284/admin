@@ -31,4 +31,20 @@ export default [
       title: '新增类目',
     },
   },
+  {
+    path: '/model',
+    name: 'Model',
+    component: () => import('@/views/product/model/list/Index.vue'),
+    meta: {
+      title: '型号列表',
+    },
+  },
+  {
+    path: '/model/add',
+    name: 'AddModel',
+    component: () => import('@/views/product/model/add/Index.vue'),
+    meta: {
+      title: '新增型号',
+    },
+  },
 ]

@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-title">基础信息</div>
       </template>
-      <Form v-model:form="formData" :schema="schema" @submit="onSubmit" @cancel="toCategoryList" />
+      <Form v-model:form="formData" :schema="schema" @submit="onSubmit" @cancel="toModelList" />
     </el-card>
   </div>
 </template>
@@ -20,16 +20,20 @@
   const route = useRoute()
   const api = useApi()
 
-  const categoryId = ref()
+  const modelId = ref()
   const formData = ref({
     name: '',
+    desc: '',
+    category: [],
+    brand: [],
+    series: [],
+    logo: [],
     introduction: '',
-    upperCategoryId: '',
   })
 
   const schema = [
     {
-      label: '名称',
+      label: '产品型号',
       prop: 'name',
       component: 'input',
       config: {
@@ -40,9 +44,10 @@
       },
     },
     {
-      label: '描述',
-      prop: 'introduction',
+      label: '产品描述',
+      prop: 'desc',
       component: 'input',
+      rule: [{ required: false }],
       config: {
         placeholder: '请输入',
         type: 'textarea',
@@ -53,8 +58,8 @@
       },
     },
     {
-      label: '上级类目',
-      props: 'upperCategoryId',
+      label: '所属类目',
+      prop: 'category',
       component: 'select',
       config: {
         placeholder: '请选择',
@@ -62,16 +67,45 @@
           width: '300px',
         },
       },
-      options: [
-        {
-          value: '1',
-          label: '1',
+      options: [],
+    },
+    {
+      label: '所属品牌',
+      prop: 'brand',
+      component: 'select',
+      config: {
+        placeholder: '请选择',
+        style: {
+          width: '300px',
         },
-        {
-          value: '2',
-          label: '2',
+      },
+      options: [],
+    },
+    {
+      label: '所属系列',
+      prop: 'series',
+      component: 'select',
+      rule: [{ required: false }],
+      config: {
+        placeholder: '请选择',
+        style: {
+          width: '300px',
         },
-      ],
+      },
+      options: [],
+    },
+    {
+      label: '缩略图',
+      prop: 'logo',
+      component: 'upload',
+      config: {
+        limit: 1,
+      },
+    },
+    {
+      label: '官方介绍',
+      prop: 'introduction',
+      component: 'input',
     },
   ]
 
@@ -79,26 +113,26 @@
     const params = {
       ...formData.value,
     }
-    await api.product.addCategory(params, { method: 'POST' })
+    await api.product.addModel(params, { method: 'POST' })
     ElMessage({
-      message: `${categoryId.value ? '修改' : '新增'}类目成功`,
+      message: `${modelId.value ? '修改' : '新增'}型号成功`,
       type: 'success',
     })
-    toCategoryList()
+    toModelList()
   }
 
-  const toCategoryList = () => {
+  const toModelList = () => {
     router.push({
-      path: '/product/category',
+      path: '/product/model',
     })
   }
 
   const init = async () => {
-    // 生成上级类目OPTIONS TODO
+    // 生成上级型号OPTIONS TODO
 
-    categoryId.value = route.query.categoryId
-    if (categoryId.value) {
-      const ret = await api.product.getCategoryInfo({ categoryId: categoryId.value })
+    modelId.value = route.query.modelId
+    if (modelId.value) {
+      const ret = await api.product.getModelInfo({ modelId: modelId.value })
       Object.keys(formData.value).forEach((key) => {
         ret[key] && (formData.value[key] = ret[key])
       })
