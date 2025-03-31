@@ -42,22 +42,9 @@
           title: '品牌管理',
           index: '/product/brand',
         },
-      ],
-    },
-    {
-      title: '系统设置',
-      index: '/settings',
-      icon: 'el-icon-setting',
-      children: [
         {
-          title: '权限设置',
-          index: '/settings/permissions',
-          children: [],
-        },
-        {
-          title: '角色设置',
-          index: '/settings/roles',
-          children: [],
+          title: '类目管理',
+          index: '/product/category',
         },
       ],
     },

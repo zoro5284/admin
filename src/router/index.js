@@ -12,7 +12,6 @@ for (const path in modules) {
   })
   routes.push(...moduleRoute)
 }
-console.log('routes', routes)
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +26,9 @@ const router = createRouter({
       name: 'Layout',
       redirect: '/home',
       component: () => import('@/components/Layout.vue'),
+      meta: {
+        title: '首页',
+      },
       children: [
         {
           path: '/home',

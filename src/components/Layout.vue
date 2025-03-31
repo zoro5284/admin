@@ -1,12 +1,9 @@
 <template>
-  <div class="layout">
-    <!-- Header -->
+  <!-- <div class="layout">
     <header class="header">
       <div class="header-content">
         <div class="logo-icon"></div>
         <h1 class="logo-text">CYCLINX</h1>
-
-        <!-- 用户名下拉菜单 -->
         <el-dropdown class="user-menu" @command="handleCommand">
           <span class="user-name">
             {{ userInfo.userName }}
@@ -21,15 +18,20 @@
       </div>
     </header>
 
-    <!-- Main container -->
     <div class="layout-body">
-      <!-- Aside (Sidebar Menu) -->
       <el-aside width="200px" class="layout-aside">
         <Menu />
       </el-aside>
 
-      <!-- Main content area (Router View) -->
       <el-main class="layout-main">
+        <router-view />
+      </el-main>
+    </div>
+  </div> -->
+  <div class="layout">
+    <div class="layout-body">
+      <el-main class="layout-main">
+        <Breadcrumb />
         <router-view />
       </el-main>
     </div>
@@ -41,8 +43,8 @@
   import { useRouter } from 'vue-router'
   import { ArrowDown } from '@element-plus/icons-vue'
   import Menu from './Menu.vue' // 引入菜单组件
+  import Breadcrumb from './bread-crumb/Index.vue'
   import useApi from '@/api'
-  import { method } from 'lodash-es'
 
   const api = useApi()
 
