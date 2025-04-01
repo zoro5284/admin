@@ -20,7 +20,7 @@
   import ImageMarkder from '@/components/image-marker'
   import testPng from '@/assets/img/test.png'
   import schema from '@/components/form/schema'
-  import Unit1 from '@/unit/Unit1.vue'
+  import ColorSet from '@/unit/ColorSet.vue'
 
   const position = ref([50, 50])
   watch(position, (val) => {
