@@ -1,9 +1,10 @@
 <template>
+  <Unit1 />
   <!-- <ImageMarkder :url="testPng" v-model:position="position" /> -->
   <!-- <div class="home-page">BTN</div> -->
 
   <!-- <Table :data="tableData" :columns="tableColumns" /> -->
-  <Form v-model:form="formObj" :schema="schema" />
+  <!-- <Form v-model:form="formObj" :schema="schema" /> -->
   <!-- <Upload /> -->
 
   <!-- <Editor v-model="content" /> -->
@@ -19,6 +20,8 @@
   import ImageMarkder from '@/components/image-marker'
   import testPng from '@/assets/img/test.png'
   import schema from '@/components/form/schema'
+  import Unit1 from '@/unit/Unit1.vue'
+
   const position = ref([50, 50])
   watch(position, (val) => {
     console.log('position', val)
