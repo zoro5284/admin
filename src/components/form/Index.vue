@@ -52,6 +52,7 @@
     ElUpload,
   } from 'element-plus'
   import Upload from '@/components/upload/Index.vue'
+  import Editor from '@/components/editor/Index.vue'
 
   const componentMap = {
     input: ElInput,
@@ -60,6 +61,7 @@
     datePicker: ElDatePicker,
     select: ElSelect,
     upload: ElUpload,
+    editor: Editor,
   }
 
   const slotComponentMap = {
@@ -139,6 +141,7 @@
 
   // btn operations
   const onSubmit = () => {
+    console.log('form-submit', props.form)
     if (!formRef.value) return
     formRef.value.validate((valid, field) => {
       if (valid) {
