@@ -6,26 +6,19 @@
     <el-table :data="colorList" style="width: 100%">
       <el-table-column prop="color" label="主色">
         <template #default="scope">
-          <el-input
-            :model-value="scope.row.color"
-            @update:model-value="updateModelValue($event, 'color', scope.$index)"
-          />
+          <el-input v-model="colorList[scope.$index].color" />
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="备注">
         <template #default="scope">
-          <el-input
-            :model-value="scope.row.remark"
-            @update:model-value="updateModelValue($event, 'remark', scope.$index)"
-          />
+          <el-input v-model="colorList[scope.$index].remark" />
         </template>
       </el-table-column>
       <el-table-column prop="logo" label="缩略图">
         <template #default="scope">
           <Upload
             class="upload"
-            :file-list="scope.row.logo"
-            @update:file-list="updateModelValue($event, 'logo', scope.$index)"
+            v-model:file-list="colorList[scope.$index].logo"
             :config="{ 'list-type': 'picture-card', limit: 1 }"
           />
         </template>
@@ -45,9 +38,10 @@
   </el-card>
 </template>
 <script setup>
-  import { reactive, ref } from 'vue'
   import { Upload, CircleIcon } from '@/components'
   import { cloneDeep } from 'lodash-es'
+
+  const colorList = defineModel('colorList', { type: Array, required: true })
 
   const EmptyRow = {
     color: '',
@@ -55,26 +49,12 @@
     logo: [],
   }
 
-  const colorList = reactive([
-    {
-      color: '暗夜黑',
-      remark: '备注',
-      logo: [],
-    },
-  ])
-
   const addColor = () => {
-    colorList.push(cloneDeep(EmptyRow))
-    console.log('color-list', colorList)
+    colorList.value.push(cloneDeep(EmptyRow))
   }
 
   const deleteColor = (idx) => {
-    colorList.splice(idx, 1)
-  }
-
-  const updateModelValue = (value, key, index) => {
-    // console.log('update', value, key, index)
-    colorList[index][key] = value
+    colorList.value.splice(idx, 1)
   }
 </script>
 <style lang="scss" scoped>

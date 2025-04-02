@@ -1,29 +1,28 @@
 <template>
   <el-card>
     <div slot="header">自定义规格</div>
-    <el-table :data="specList" style="width: 100%">
+    <el-table :data="propertyList" style="width: 100%">
       <el-table-column prop="name" label="规格名">
-        <template v-slot="scope">
-          <el-input
-            :model-value="scope.row.name"
-            @update:model-value="updateModelValue($event, 'name', scope.$index)"
-          />
+        <template v-slot="{ $index, row }">
+          <el-input v-model="propertyList[$index].name" />
         </template>
       </el-table-column>
       <el-table-column prop="values" label="属性值">
         <template v-slot="{ $index, row }">
-          <template v-for="(value, index) in row" :key="index">
-            <el-input
-              :model-value="value"
-              @update:model-value="updateModelValue($event, $index, index)"
-            />
-            <el-icon @click="deleteProperty($index, index)"><Delete /></el-icon>
-          </template>
-          <el-button type="primary" size="small" @click="addProperty($index)">
+          <div v-for="(value, index) in row.values" :key="index" class="row">
+            <el-input v-model="propertyList[$index].values[index]" />
+            <el-icon class="del-icon" @click="deleteProperty($index, index)"><Delete /></el-icon>
+          </div>
+          <el-button
+            type="primary"
+            size="small"
+            @click="addProperty($index)"
+            style="margin-top: 8px"
+          >
             <el-icon class="el-icon--plus">
               <Plus />
             </el-icon>
-            <span style="margin-left: 6px">添加颜色</span>
+            <span style="margin-left: 6px">添加一行</span>
           </el-button>
         </template>
       </el-table-column>
@@ -37,7 +36,7 @@
       <el-icon class="el-icon--plus">
         <Plus />
       </el-icon>
-      <span style="margin-left: 6px">添加颜色</span>
+      <span style="margin-left: 6px">添加规格</span>
     </el-button>
   </el-card>
 </template>
@@ -45,31 +44,37 @@
   import { CircleIcon } from '@/components'
   import { cloneDeep } from 'lodash-es'
   import { Delete } from '@element-plus/icons-vue'
+
+  const propertyList = defineModel('propertyList', { type: Array, required: true })
   const EmptyRow = {
     name: '',
-    values: [],
+    values: [''],
   }
-  const specList = reactive([
-    {
-      name: '',
-      values: [],
-    },
-  ])
 
   const addRow = () => {
-    specList.push(cloneDeep(EmptyRow))
+    propertyList.value.push(cloneDeep(EmptyRow))
   }
 
   const deleteRow = (rowIndex) => {
-    specList.splice(rowIndex, 1)
+    propertyList.value.splice(rowIndex, 1)
   }
 
   const addProperty = (rowIndex) => {
-    specList[rowIndex].values.push('')
+    propertyList.value[rowIndex].values.push('')
   }
 
   const deleteProperty = (rowIndex, propertyIndex) => {
-    specList[rowIndex].values.splice(propertyIndex, 1)
+    propertyList.value[rowIndex].values.splice(propertyIndex, 1)
   }
 </script>
-<style lang="less" scoped></style>
+<style lang="scss" scoped>
+  .row {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    .del-icon {
+      color: red;
+      margin-left: 8px;
+    }
+  }
+</style>
