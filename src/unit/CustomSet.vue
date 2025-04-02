@@ -4,7 +4,10 @@
     <el-table :data="propertyList" style="width: 100%">
       <el-table-column prop="name" label="规格名">
         <template v-slot="{ $index, row }">
-          <el-input v-model="propertyList[$index].name" />
+          <el-input
+            v-model="propertyList[$index].name"
+            @change="onPropertyChange($event, $index)"
+          />
         </template>
       </el-table-column>
       <el-table-column prop="values" label="属性值">
@@ -65,6 +68,28 @@
 
   const deleteProperty = (rowIndex, propertyIndex) => {
     propertyList.value[rowIndex].values.splice(propertyIndex, 1)
+  }
+
+  const onPropertyChange = ($event, rowIndex) => {
+    if (propertyList.filter((item) => item.name === $event)?.length > 1) {
+      ElMessage({
+        message: `规格【${$event}】已经存在，请重新配置`,
+        type: 'error',
+      })
+      propertyList.value[rowIndex].name = ''
+    }
+  }
+
+  const onPropertyValueChange = ($event, rowIndex, index) => {
+    const values = propertyList.value[rowIndex].values
+
+    if (values.filter((value) => $event === value)?.length > 1) {
+      ElMessage({
+        message: `规格值【${$event}】已经存在，请重新配置`,
+        type: 'error',
+      })
+      propertyList.value[rowIndex].values[index] = ''
+    }
   }
 </script>
 <style lang="scss" scoped>

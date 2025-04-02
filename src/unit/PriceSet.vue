@@ -14,6 +14,7 @@
 </template>
 <script setup>
   import { watchEffect, ref } from 'vue'
+  import { isEqual, property } from 'lodash-es'
 
   const priceList = defineModel('priceList', { type: Array, required: true })
 
@@ -31,12 +32,19 @@
   watchEffect(() => {
     const list = props.propertyList.reduce(
       (acc, { name, values }) => {
-        console.log('acc', acc, values)
         return acc.flatMap((obj) => values.map((value) => ({ ...obj, [name]: value })))
       },
       props.colorList.map(({ color }) => ({ color })),
     )
-    console.log('list ', list)
+
+    list.forEach((row) => {
+      const sameRow = propertyList.value.find((originRow) => {
+        return isEqual(row, originRow)
+      })
+      row.price = sameRow.price || ''
+    })
+
+    priceList.value = list
   })
 </script>
 <style lang="scss" scoped></style>

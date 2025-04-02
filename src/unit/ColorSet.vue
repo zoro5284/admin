@@ -6,7 +6,10 @@
     <el-table :data="colorList" style="width: 100%">
       <el-table-column prop="color" label="主色">
         <template #default="scope">
-          <el-input v-model="colorList[scope.$index].color" />
+          <el-input
+            v-model="colorList[scope.$index].color"
+            @change="onColorChange($event, scope.$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="备注">
@@ -39,6 +42,7 @@
 </template>
 <script setup>
   import { Upload, CircleIcon } from '@/components'
+  import { ElMessage } from 'element-plus'
   import { cloneDeep } from 'lodash-es'
 
   const colorList = defineModel('colorList', { type: Array, required: true })
@@ -55,6 +59,16 @@
 
   const deleteColor = (idx) => {
     colorList.value.splice(idx, 1)
+  }
+
+  const onColorChange = ($event, rowIndex) => {
+    if (colorList.filter((item) => item.color === $event)?.length > 1) {
+      ElMessage({
+        message: `颜色【${$event}】已经存在，请重新配置`,
+        type: 'error',
+      })
+      colorList.value[rowIndex].color = ''
+    }
   }
 </script>
 <style lang="scss" scoped>
