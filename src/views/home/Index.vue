@@ -8,14 +8,9 @@
 
   <!-- <Editor v-model="content" /> -->
   <!-- <div class="content" v-html="content"></div> -->
-  <ColorSet v-model:colorList="colorList" />
-  <CustomSet v-model:propertyList="propertyList" />
-  <PriceSet :color-list="colorList" :property-list="propertyList" />
-
-  <el-button type="primary" @click="test">Test</el-button>
 </template>
 <script setup>
-  import { ref, watch } from 'vue'
+  import { ref, watch, watchEffect } from 'vue'
   import Form from '@/components/form'
   import Editor from '@/components/editor'
   import Upload from '@/components/upload'
@@ -27,13 +22,6 @@
   import ColorSet from '@/unit/ColorSet.vue'
   import CustomSet from '@/unit/CustomSet.vue'
   import PriceSet from '@/unit/PriceSet.vue'
-
-  const colorList = ref([])
-  const propertyList = ref([])
-
-  const test = () => {
-    console.log('color-list', colorList.value)
-  }
 
   const position = ref([50, 50])
   watch(position, (val) => {

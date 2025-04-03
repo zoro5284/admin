@@ -47,4 +47,20 @@ export default [
   //     title: '型号列表',
   //   },
   // },
+  {
+    path: '/modelVersion/list',
+    name: 'ModelVersion',
+    component: () => import('@/views/product/model-version/list/Index.vue'),
+    meta: {
+      title: '型号版本列表',
+    },
+  },
+  {
+    path: '/modelVersion/add',
+    name: 'AddModelVersion',
+    component: () => import('@/views/product/model-version/add/Index.vue'),
+    meta: {
+      title: '新增型号版本',
+    },
+  },
 ]

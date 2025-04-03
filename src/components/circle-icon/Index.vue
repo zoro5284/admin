@@ -7,7 +7,7 @@
 </template>
 <script setup>
   import { ref, reactive, computed, onMounted } from 'vue'
-  import { Edit, Delete } from '@element-plus/icons-vue'
+  import { Edit, Delete, Plus } from '@element-plus/icons-vue'
 
   const props = defineProps({
     type: {
@@ -24,6 +24,10 @@
     edit: {
       background: '#407aFF',
       component: Edit,
+    },
+    plus: {
+      background: '#007bff',
+      component: Plus,
     },
   }
 

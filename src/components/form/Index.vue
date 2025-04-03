@@ -155,5 +155,20 @@
   const onCannel = () => {
     emits('cancel')
   }
+
+  const validateForm = () => {
+    if (!formRef.value) return Promise.reject()
+    return new Promise((resolve, reject) => {
+      formRef.value.validate((valid, field) => {
+        if (validate) {
+          resolve(field)
+        } else {
+          reject(field)
+        }
+      })
+    })
+  }
+
+  defineExpose({ validateForm })
 </script>
 <style lang="less" scoped></style>
