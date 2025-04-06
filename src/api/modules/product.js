@@ -23,5 +23,5 @@ export default {
   getModelInfo: '/manager/product/model/info',
   addModel: '/manager/product/model/save',
   deleteModel: '/manager/product/model/delete',
-  updateModelState: '/manager/product/model/save',
+  updateModelState: '/manager/product/model/update-state',
 }
