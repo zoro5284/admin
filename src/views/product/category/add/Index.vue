@@ -14,6 +14,7 @@
   import { alphabetArray } from '@/utils'
   import { ElMessage } from 'element-plus'
   import { useRoute, useRouter } from 'vue-router'
+  import { getAllCategory, findCategoryPathById } from '@/utils'
   import useApi from '@/api'
 
   const router = useRouter()
@@ -23,11 +24,11 @@
   const categoryId = ref()
   const formData = ref({
     name: '',
-    introduction: '',
-    upperCategoryId: '',
+    desc: '',
+    parentCategoryId: '',
   })
 
-  const schema = [
+  const schema = reactive([
     {
       label: '名称',
       prop: 'name',
@@ -41,7 +42,7 @@
     },
     {
       label: '描述',
-      prop: 'introduction',
+      prop: 'desc',
       component: 'input',
       config: {
         placeholder: '请输入',
@@ -54,30 +55,23 @@
     },
     {
       label: '上级类目',
-      props: 'upperCategoryId',
-      component: 'select',
+      props: 'parentCategoryId',
+      component: 'cascader',
       config: {
         placeholder: '请选择',
         style: {
           width: '300px',
         },
+        options: [],
       },
-      options: [
-        {
-          value: '1',
-          label: '1',
-        },
-        {
-          value: '2',
-          label: '2',
-        },
-      ],
     },
-  ]
+  ])
 
   const onSubmit = async () => {
+    const categoryList = formData.value.categoryId
     const params = {
       ...formData.value,
+      categoryId: categoryList[categoryList.length - a],
     }
     await api.product.addCategory(params, { method: 'POST' })
     ElMessage({
@@ -93,17 +87,26 @@
     })
   }
 
-  const init = async () => {
-    // 生成上级类目OPTIONS TODO
+  const generateOptions = async (id) => {
+    const options = await getAllCategory()
+    schema(schema.length - 1).config.options = options
+    if (id) {
+      formData.value.parentCategoryId = findCategoryPathById(options, id)
+    }
+  }
 
+  const init = async () => {
     categoryId.value = route.query.categoryId
     if (categoryId.value) {
       const ret = await api.product.getCategoryInfo({ categoryId: categoryId.value })
       Object.keys(formData.value).forEach((key) => {
+        // 上级类目需特殊处理
+        if (key === 'parentCategoryId') return
         ret[key] && (formData.value[key] = ret[key])
       })
-      console.log('ret', formData.value)
     }
+    // 生成上级类目OPTIONS
+    await generateOptions(ret.parentCategoryId)
   }
 
   onMounted(() => {

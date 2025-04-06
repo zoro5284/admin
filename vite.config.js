@@ -48,7 +48,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/gateway': {
-        target: 'http://2izsat.natappfree.cc',
+        target: 'http://dywkci.natappfree.cc/',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/gateway/, ''),
       },

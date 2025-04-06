@@ -50,6 +50,7 @@
     ElDatePicker,
     ElInput,
     ElUpload,
+    ElCascader,
   } from 'element-plus'
   import Upload from '@/components/upload/Index.vue'
   import Editor from '@/components/editor/Index.vue'
@@ -62,6 +63,7 @@
     select: ElSelect,
     upload: ElUpload,
     editor: Editor,
+    cascader: ElCascader,
   }
 
   const slotComponentMap = {

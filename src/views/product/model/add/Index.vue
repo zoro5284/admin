@@ -11,7 +11,7 @@
 <script setup>
   import { ref, reactive, computed, onMounted } from 'vue'
   import { Form } from '@/components'
-  import { alphabetArray } from '@/utils'
+  import { alphabetArray, findCategoryPathById, getAllBrand, getAllCategory } from '@/utils'
   import { ElMessage } from 'element-plus'
   import { useRoute, useRouter } from 'vue-router'
   import useApi from '@/api'
@@ -24,14 +24,14 @@
   const formData = ref({
     name: '',
     desc: '',
-    category: [],
-    brand: [],
-    series: [],
+    categoryId: [],
+    brandId: '',
+    seriesId: '',
     logo: [],
     introduction: '',
   })
 
-  const schema = [
+  const schema = reactive([
     {
       label: '产品型号',
       prop: 'name',
@@ -59,7 +59,7 @@
     },
     {
       label: '所属类目',
-      prop: 'category',
+      prop: 'categoryId',
       component: 'select',
       config: {
         placeholder: '请选择',
@@ -71,7 +71,7 @@
     },
     {
       label: '所属品牌',
-      prop: 'brand',
+      prop: 'brandId',
       component: 'select',
       config: {
         placeholder: '请选择',
@@ -83,7 +83,7 @@
     },
     {
       label: '所属系列',
-      prop: 'series',
+      prop: 'seriesId',
       component: 'select',
       rule: [{ required: false }],
       config: {
@@ -107,11 +107,14 @@
       prop: 'introduction',
       component: 'input',
     },
-  ]
+  ])
 
   const onSubmit = async () => {
+    const categoryList = [...formData.value.categoryId]
+
     const params = {
       ...formData.value,
+      categoryId: categoryList[categoryList.length - 1],
     }
     await api.product.addModel(params, { method: 'POST' })
     ElMessage({
@@ -127,18 +130,41 @@
     })
   }
 
-  const init = async () => {
-    // 生成上级型号OPTIONS TODO
+  const generateOptions = async (categoryId, seriesId) => {
+    schema[2].options = await getAllCategory()
+    schema[3].options = await getAllBrand()
+    if (categoryId) {
+      formData.value.categoryId = findCategoryPathById(schema[2].options, categoryI)
+    }
+    if (seriesId) {
+      formData.value.seriesId = seriesId
+      schema[4].options = await querySeriesList({ brandId: formData.value.brandId })
+    }
+  }
 
+  const init = async () => {
     modelId.value = route.query.modelId
     if (modelId.value) {
       const ret = await api.product.getModelInfo({ modelId: modelId.value })
       Object.keys(formData.value).forEach((key) => {
+        // 类目使用cascader，需特殊处理。系列在生成品牌options后赋值
+        if (['category', 'seriesId'].includes(key)) return
         ret[key] && (formData.value[key] = ret[key])
       })
       console.log('ret', formData.value)
     }
+    // 生成品牌，系列Options
+    generateOptions(ret.categoryId, ret.seriesId)
   }
+
+  // 品牌变化时，清空已经选择的系列。重新查询系列数据
+  watch(
+    () => formData.value.brandId,
+    (val) => {
+      formData.value.seriesId = ''
+      scheme[4].options = querySeriesList({ brandId: val })
+    },
+  )
 
   onMounted(() => {
     init()

@@ -35,13 +35,14 @@
   import { useRouter } from 'vue-router'
   import useApi from '@/api'
   import dayjs from 'dayjs'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, formatter } from 'element-plus'
+  import { generateBrandName, getAllBrand, getAllCategory } from '@/utils'
 
   const router = useRouter()
   const api = useApi()
 
   // 搜索部分
-  const searchSchema = [
+  const searchSchema = reactive([
     {
       label: '型号名称',
       prop: 'name',
@@ -64,11 +65,12 @@
           width: '150px',
         },
       },
+      options: [],
     },
     {
       label: '所属类目',
       prop: 'category',
-      component: 'select',
+      component: 'cascader',
       config: {
         clearable: true,
         placeholder: '请选择类目',
@@ -76,6 +78,7 @@
           width: '150px',
         },
       },
+      options: [],
     },
     {
       label: '型号状态',
@@ -93,12 +96,12 @@
         { value: 2, label: '停用' },
       ],
     },
-  ]
+  ])
 
   const searchForm = ref({
     name: '',
-    brand: '',
-    category: '',
+    brandId: '',
+    categoryId: '',
     state: '',
   })
 
@@ -133,14 +136,21 @@
     {
       prop: 'brandName',
       label: '所属品牌',
+      formatter: ({ scope }) => {
+        // nameEn：英文名。nameZh: 中文名
+        const {
+          row: { nameZh, nameEn },
+        } = scope
+        return generateBrandName(nameZh, nameEn)
+      },
     },
     {
-      prop: 'category',
+      prop: 'categoryName',
       label: '所属类目',
     },
     {
       prop: 'state',
-      label: '型号状态',
+      label: '状态',
       columnRenderFn: ({ scope }) => {
         const state = scope.row.state
         if (state !== 0 && state !== 2) return h('span', null, '-')
@@ -252,6 +262,15 @@
     })
     onSearch(true)
   }
+
+  const init = async () => {
+    // 初始化筛选项
+    const [brandOpts, categoryOpts] = Promise.all([getAllBrand(), getAllCategory()])
+    searchSchema[1].options = brandOpts
+    searchSchema[1].options = categoryOpts
+  }
+
+  init()
 
   watch(
     () => [paginationConfig.pageSize, paginationConfig.currentPage],
