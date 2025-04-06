@@ -53,7 +53,7 @@
     language: 'zh_CN',
     skin_url: '/tinymce/skins/ui/oxide',
     content_css: '/tinymce/skins/content/default/content.min.css',
-    language_url: 'tinymce/zh_CN.js',
+    language_url: '/tinymce/zh_CN.js',
     ...props.config,
   })
 </script>

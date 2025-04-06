@@ -8,7 +8,7 @@
         @reset="onSearch(true)"
       />
     </el-card>
-    <el-card style="margin-top: 28px">
+    <el-card style="margin-top: 28px" class="category-content">
       <div class="table-top">
         <span class="title">类目列表</span>
         <el-button class="btn1 btn" type="primary" @click="toAddPage()">新建</el-button>
@@ -19,9 +19,6 @@
       <Table
         :data="tableData"
         :columns="columns"
-        :config="{
-          style: { 'min-height': '400px' },
-        }"
         v-model:pageSize="paginationConfig.pageSize"
         v-model:currentPage="paginationConfig.currentPage"
         :total="paginationConfig.total"
@@ -32,9 +29,9 @@
   </div>
 </template>
 <script setup>
-  import { ref, watch, reactive, computed, onMounted, h } from 'vue'
+  import { ref, watch, reactive, computed, onMounted, h, onActivated } from 'vue'
   import { CommonSearch, Table, Form } from '@/components'
-  import TableOperation from './components/TableOperation.vue'
+  import TableOperation from '../../components/TableOperation.vue'
   import { useRouter } from 'vue-router'
   import useApi from '@/api'
   import dayjs from 'dayjs'
@@ -42,6 +39,10 @@
 
   const router = useRouter()
   const api = useApi()
+
+  defineOptions({
+    name: 'Category',
+  })
 
   // 搜索部分
   const searchSchema = [
@@ -99,6 +100,7 @@
       formatter: ({ scope, key, value }) => {
         return scope.$index + 1
       },
+      width: 80,
     },
     {
       prop: 'name',
@@ -138,7 +140,6 @@
     },
     {
       label: '操作',
-      width: '300',
       columnRenderFn: ({ scope, column }) => {
         const { categoryId: id, state } = scope.row
         return h(TableOperation, {
@@ -160,6 +161,7 @@
           },
         })
       },
+      width: 200,
     },
   ]
 
@@ -219,19 +221,22 @@
     onSearch(true)
   }
 
+  onActivated(() => {
+    onSearch()
+  })
+
   watch(
     () => [paginationConfig.pageSize, paginationConfig.currentPage],
     (val) => {
       onSearch()
-    },
-    {
-      immediate: true,
     },
   )
 </script>
 
 <style lang="scss" scoped>
   .category-page {
+    height: 100%;
+    overflow: scroll;
     .table-top {
       margin-bottom: 18px;
       display: flex;
@@ -246,6 +251,10 @@
       .btn {
         min-width: 88px;
       }
+    }
+    .category-content {
+      flex: 1;
+      overflow: scroll;
     }
   }
 </style>

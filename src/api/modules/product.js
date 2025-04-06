@@ -22,6 +22,6 @@ export default {
   queryModelList: '/manager/product/model/query',
   getModelInfo: '/manager/product/model/info',
   addModel: '/manager/product/model/save',
-  deleteModel: '/manager/product/model/info',
+  deleteModel: '/manager/product/model/delete',
   updateModelState: '/manager/product/model/save',
 }

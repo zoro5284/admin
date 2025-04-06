@@ -4,7 +4,7 @@
       <div class="header-content">
         <div class="logo-icon"></div>
         <h1 class="logo-text">CYCLINX</h1>
-        <el-dropdown class="user-menu" @command="handleCommand" v-if="userName">
+        <el-dropdown class="user-menu" @command="handleCommand" v-if="userInfo.userName">
           <span class="user-name">
             {{ userInfo.userName }}
             <el-icon><ArrowDown /></el-icon>
@@ -25,7 +25,15 @@
 
       <el-main class="layout-main">
         <Breadcrumb />
-        <router-view />
+        <router-view class="layout-content" v-slot="{ Component, route }">
+          <!-- 缓存的情况 -->
+          <keep-alive :include="cachedComponents">
+            <component :is="Component" />
+          </keep-alive>
+
+          <!-- 不缓存的情况 -->
+          <!-- <component :is="Component" v-show="!route.meta.keepAlive" /> -->
+        </router-view>
       </el-main>
     </div>
   </div>
@@ -40,8 +48,8 @@
 </template>
 
 <script setup>
-  import { ref, reactive } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { ref, reactive, computed, watch } from 'vue'
+  import { useRouter, useRoute } from 'vue-router'
   import { ArrowDown } from '@element-plus/icons-vue'
   import Menu from './Menu.vue' // 引入菜单组件
   import Breadcrumb from './bread-crumb/Index.vue'
@@ -50,6 +58,25 @@
   const api = useApi()
 
   const router = useRouter()
+  const route = useRoute()
+
+  const cachedComponents = ref([])
+
+  watch(
+    () => route.name,
+    (val) => {
+      if (route.meta.keepAlive && typeof val === 'string') {
+        if (!cachedComponents.value.includes(val)) {
+          cachedComponents.value.push(val)
+          console.log('cachedComponents', cachedComponents.value)
+        }
+      }
+    },
+    {
+      immediate: true,
+    },
+  )
+
   const userInfo = reactive({
     profilePhoto: '',
     userName: '',
@@ -87,6 +114,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between; /* 左右对齐 */
+    height: 60px;
     padding: 18px 40px;
     background: linear-gradient(90deg, #ffa500, #ffcc80);
     color: white;
@@ -124,16 +152,16 @@
 
   /* Logo图标 */
   .logo-icon {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     background: white;
     border-radius: 50%;
-    margin-right: 20px;
+    margin-right: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   .logo-text {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: bold;
     margin: 0;
     text-transform: uppercase;
@@ -145,6 +173,7 @@
   .layout-body {
     display: flex;
     flex: 1;
+    height: calc(100vh - 60px);
     background-color: #f6f6f6;
   }
 
@@ -154,8 +183,13 @@
   }
 
   .layout-main {
+    display: flex;
+    flex-direction: column;
     flex: 1;
-    padding: 20px;
+    padding: 0 20px;
     background-color: #fff;
+    .layout-content {
+      flex: 1;
+    }
   }
 </style>

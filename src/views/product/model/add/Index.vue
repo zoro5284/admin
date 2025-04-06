@@ -1,6 +1,6 @@
 <template>
-  <div class="brand-add-page">
-    <el-card style="height: 100%">
+  <div class="model-add-page">
+    <el-card>
       <template #header>
         <div class="card-title">基础信息</div>
       </template>
@@ -9,7 +9,7 @@
   </div>
 </template>
 <script setup>
-  import { ref, reactive, computed, onMounted } from 'vue'
+  import { ref, reactive, computed, onMounted, watch } from 'vue'
   import { Form } from '@/components'
   import { alphabetArray, findCategoryPathById, getAllBrand, getAllCategory } from '@/utils'
   import { ElMessage } from 'element-plus'
@@ -26,8 +26,8 @@
     desc: '',
     categoryId: [],
     brandId: '',
-    seriesId: '',
-    logo: [],
+    brandSeriesId: '',
+    photo: [],
     introduction: '',
   })
 
@@ -60,14 +60,17 @@
     {
       label: '所属类目',
       prop: 'categoryId',
-      component: 'select',
+      component: 'cascader',
       config: {
         placeholder: '请选择',
         style: {
           width: '300px',
         },
+        options: [],
+        props: {
+          checkStrictly: true,
+        },
       },
-      options: [],
     },
     {
       label: '所属品牌',
@@ -83,7 +86,7 @@
     },
     {
       label: '所属系列',
-      prop: 'seriesId',
+      prop: 'brandSeriesId',
       component: 'select',
       rule: [{ required: false }],
       config: {
@@ -96,7 +99,7 @@
     },
     {
       label: '缩略图',
-      prop: 'logo',
+      prop: 'photo',
       component: 'upload',
       config: {
         limit: 1,
@@ -105,7 +108,7 @@
     {
       label: '官方介绍',
       prop: 'introduction',
-      component: 'input',
+      component: 'editor',
     },
   ])
 
@@ -114,8 +117,15 @@
 
     const params = {
       ...formData.value,
-      categoryId: categoryList[categoryList.length - 1],
+      photo: formData.value.photo[0]?.url,
     }
+
+    modelId.value && (params.modelId = modelId.value)
+
+    if (Array.isArray(categoryList)) {
+      params.categoryId = categoryList[categoryList.length - 1]
+    }
+
     await api.product.addModel(params, { method: 'POST' })
     ElMessage({
       message: `${modelId.value ? '修改' : '新增'}型号成功`,
@@ -125,44 +135,61 @@
   }
 
   const toModelList = () => {
-    router.push({
-      path: '/product/model',
-    })
+    window.history.back()
+    // router.go(-1)
+    // router.push({
+    //   path: '/product/model',
+    // })
   }
 
-  const generateOptions = async (categoryId, seriesId) => {
-    schema[2].options = await getAllCategory()
+  const setSeriesOptions = async (id) => {
+    schema[4].options = (
+      (await api.product.querySeriesList({ brandId: formData.value.brandId })) ?? []
+    ).map((item) => {
+      return {
+        label: item.name,
+        value: item.seriesId,
+      }
+    })
+    formData.value.brandSeriesId = id
+  }
+
+  const generateOptions = async (categoryId, brandSeriesId) => {
+    schema[2].config.options = await getAllCategory()
     schema[3].options = await getAllBrand()
     if (categoryId) {
-      formData.value.categoryId = findCategoryPathById(schema[2].options, categoryI)
+      formData.value.categoryId = findCategoryPathById(schema[2].config.options, categoryId)
     }
-    if (seriesId) {
-      formData.value.seriesId = seriesId
-      schema[4].options = await querySeriesList({ brandId: formData.value.brandId })
+    if (brandSeriesId) {
+      await setSeriesOptions(brandSeriesId)
     }
   }
 
   const init = async () => {
     modelId.value = route.query.modelId
+    let ret
     if (modelId.value) {
-      const ret = await api.product.getModelInfo({ modelId: modelId.value })
+      ret = await api.product.getModelInfo({ modelId: modelId.value })
       Object.keys(formData.value).forEach((key) => {
         // 类目使用cascader，需特殊处理。系列在生成品牌options后赋值
-        if (['category', 'seriesId'].includes(key)) return
+        if (['category', 'brandSeriesId'].includes(key)) return
+        if (key === 'photo') {
+          formData.value[key] = [{ url: ret?.photo }]
+          return
+        }
         ret[key] && (formData.value[key] = ret[key])
       })
       console.log('ret', formData.value)
     }
     // 生成品牌，系列Options
-    generateOptions(ret.categoryId, ret.seriesId)
+    generateOptions(ret?.categoryId, ret?.brandSeriesId)
   }
 
   // 品牌变化时，清空已经选择的系列。重新查询系列数据
   watch(
     () => formData.value.brandId,
     (val) => {
-      formData.value.seriesId = ''
-      scheme[4].options = querySeriesList({ brandId: val })
+      setSeriesOptions('')
     },
   )
 
@@ -172,8 +199,9 @@
 </script>
 
 <style lang="scss" scoped>
-  .brand-add-page {
+  .model-add-page {
     height: 100%;
+    overflow: scroll;
     .card-title {
       font-size: 16px;
       font-weight: bold;

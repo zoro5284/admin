@@ -25,6 +25,7 @@
 </script>
 <style lang="scss" scoped>
   .breadcrumb {
-    height: 28px;
+    height: 40px;
+    line-height: 40px;
   }
 </style>

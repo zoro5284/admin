@@ -22,7 +22,6 @@
 
   const brandId = ref()
   const formData = ref({
-    brandId: '',
     nameZh: '',
     nameEn: '',
     nameFirstLetter: [],
@@ -95,6 +94,7 @@
       ...formData.value,
       logo: formData.value.logo[0]?.url,
     }
+    brandId.value && (params.brandId = brandId.value)
     if (!params.nameZh && !params.nameEn) {
       ElMessage({
         message: '请输入品牌中文名或品牌英文名',
@@ -119,7 +119,7 @@
   const init = async () => {
     brandId.value = route.query.brandId
     if (brandId.value) {
-      const ret = await api.product.getBrandInfo({ brandId })
+      const ret = await api.product.getBrandInfo({ brandId: brandId.value })
       Object.keys(formData.value).forEach((key) => {
         if (key === 'logo') {
           formData.value[key] = [{ url: ret?.logo }]

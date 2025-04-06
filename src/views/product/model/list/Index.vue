@@ -3,7 +3,7 @@
     <el-card>
       <CommonSearch
         v-model:form="searchForm"
-        :schema="searchSchema"
+        :schema="schema"
         @search="onSearch(true)"
         @reset="onSearch(true)"
       />
@@ -29,9 +29,9 @@
   </div>
 </template>
 <script setup>
-  import { ref, watch, reactive, computed, onMounted, h } from 'vue'
+  import { ref, watch, reactive, computed, onMounted, h, onActivated } from 'vue'
   import { CommonSearch, Table, Form } from '@/components'
-  import TableOperation from './components/TableOperation.vue'
+  import TableOperation from '../../components/TableOperation.vue'
   import { useRouter } from 'vue-router'
   import useApi from '@/api'
   import dayjs from 'dayjs'
@@ -41,8 +41,12 @@
   const router = useRouter()
   const api = useApi()
 
+  defineOptions({
+    name: 'Model',
+  })
+
   // 搜索部分
-  const searchSchema = reactive([
+  const schema = reactive([
     {
       label: '型号名称',
       prop: 'name',
@@ -56,7 +60,7 @@
     },
     {
       label: '所属品牌',
-      prop: 'brand',
+      prop: 'brandId',
       component: 'select',
       config: {
         clearable: true,
@@ -69,7 +73,7 @@
     },
     {
       label: '所属类目',
-      prop: 'category',
+      prop: 'categoryId',
       component: 'cascader',
       config: {
         clearable: true,
@@ -77,8 +81,11 @@
         style: {
           width: '150px',
         },
+        options: [],
+        props: {
+          checkStrictly: true,
+        },
       },
-      options: [],
     },
     {
       label: '型号状态',
@@ -110,11 +117,17 @@
       paginationConfig.currentPage = 1
     }
     const { pageSize, currentPage: pageNum } = paginationConfig
+
+    const categoryList = searchForm.value.categoryId
     const params = {
       ...searchForm.value,
       pageSize,
       pageNum,
     }
+    if (Array.isArray(categoryList)) {
+      params.categoryId = categoryList[categoryList.length - 1]
+    }
+
     const ret = (await api.product.queryModelList(params, { method: 'GET' })) ?? []
     tableData.value = ret.data
     paginationConfig.total = ret.total
@@ -128,6 +141,7 @@
       formatter: ({ scope, key, value }) => {
         return scope.$index + 1
       },
+      width: 80,
     },
     {
       prop: 'name',
@@ -139,9 +153,9 @@
       formatter: ({ scope }) => {
         // nameEn：英文名。nameZh: 中文名
         const {
-          row: { nameZh, nameEn },
+          row: { brandNameZh, brandNameEn },
         } = scope
-        return generateBrandName(nameZh, nameEn)
+        return generateBrandName(brandNameZh, brandNameEn)
       },
     },
     {
@@ -182,7 +196,7 @@
     },
     {
       label: '操作',
-      width: '300',
+      width: '200',
       columnRenderFn: ({ scope, column }) => {
         const { modelId: id, state } = scope.row
         return h(TableOperation, {
@@ -265,20 +279,21 @@
 
   const init = async () => {
     // 初始化筛选项
-    const [brandOpts, categoryOpts] = Promise.all([getAllBrand(), getAllCategory()])
-    searchSchema[1].options = brandOpts
-    searchSchema[1].options = categoryOpts
+    const [brandOpts, categoryOpts] = await Promise.all([getAllBrand(), getAllCategory()])
+    schema[1].options = brandOpts
+    schema[2].config.options = categoryOpts
   }
 
   init()
+
+  onActivated(() => {
+    onSearch()
+  })
 
   watch(
     () => [paginationConfig.pageSize, paginationConfig.currentPage],
     (val) => {
       onSearch()
-    },
-    {
-      immediate: true,
     },
   )
 </script>

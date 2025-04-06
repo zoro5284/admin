@@ -9,10 +9,10 @@
       list-type="picture"
       v-bind="config"
     >
-      <el-icon>
-        <Plus v-if="config['list-type'] === 'picture-card'" />
-        <el-button v-else size="small" type="primary">上传</el-button>
+      <el-icon v-if="config['list-type'] === 'picture-card'">
+        <Plus />
       </el-icon>
+      <el-button v-else size="small" type="primary">上传</el-button>
     </el-upload>
   </div>
 </template>

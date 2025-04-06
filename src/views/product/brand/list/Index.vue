@@ -33,15 +33,19 @@
   </div>
 </template>
 <script setup>
-  import { ref, watch, reactive, computed, onMounted, h } from 'vue'
+  import { ref, watch, reactive, computed, onMounted, h, onActivated } from 'vue'
   import { CommonSearch, Table, Form } from '@/components'
-  import TableOperation from './components/TableOperation.vue'
+  import TableOperation from '../../components/TableOperation.vue'
   import SeriesDialog from './components/SeriesDialog.vue'
   import { useRouter } from 'vue-router'
   import useApi from '@/api'
   import dayjs from 'dayjs'
   import { ElMessage } from 'element-plus'
   import { generateBrandName } from '../utils'
+
+  defineOptions({
+    name: 'Brand',
+  })
 
   const router = useRouter()
   const api = useApi()
@@ -155,6 +159,7 @@
         const { brandId: id, state } = scope.row
         return h(TableOperation, {
           state,
+          showSeries: true,
           onEdit: () => {
             toAddPage(id, scope.row)
           },
@@ -241,10 +246,11 @@
     (val) => {
       onSearch()
     },
-    {
-      immediate: true,
-    },
   )
+
+  onActivated(() => {
+    onSearch()
+  })
 </script>
 
 <style lang="scss" scoped>

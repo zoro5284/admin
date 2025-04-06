@@ -13,12 +13,20 @@
           @update:file-list="updateModelValue($event, field)"
         />
       </template>
+      <template v-else-if="field.component === 'cascader'">
+        <ElCascader
+          clearable
+          :modelValue="form[field.prop]"
+          @update:modelValue="updateModelValue($event, field)"
+          v-bind="field.config"
+        />
+      </template>
       <component
         v-else
         :is="typeof field.component === 'string' ? componentMap[field.component] : field.component"
-        v-bind="field.config"
         :modelValue="form[field.prop]"
         @update:modelValue="updateModelValue($event, field)"
+        v-bind="field.config"
       >
         <!-- 处理 ElRadio | ElSelect | ElOption-->
         <template v-if="['radio', 'select', 'checkbox'].includes(field.component)">
@@ -32,7 +40,7 @@
         </template>
       </component>
     </el-form-item>
-    <div v-if="footerVisible" style="margin-top: 38px; margin-left: 38px">
+    <div class="form-footer" v-if="footerVisible" style="margin-top: 38px; margin-left: 38px">
       <el-button type="primary" :style="{ marginLeft: '40px' }" @click="onSubmit">提交</el-button>
       <el-button @click="onCannel">取消</el-button>
     </div>
@@ -143,7 +151,6 @@
 
   // btn operations
   const onSubmit = () => {
-    console.log('form-submit', props.form)
     if (!formRef.value) return
     formRef.value.validate((valid, field) => {
       if (valid) {

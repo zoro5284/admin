@@ -5,6 +5,7 @@ export default [
     component: () => import('@/views/product/brand/list/Index.vue'),
     meta: {
       title: '品牌列表',
+      keepAlive: true,
     },
   },
   {
@@ -21,6 +22,7 @@ export default [
     component: () => import('@/views/product/category/list/Index.vue'),
     meta: {
       title: '类目列表',
+      keepAlive: true,
     },
   },
   {
@@ -32,19 +34,20 @@ export default [
     },
   },
   {
-    path: '/model/list',
+    path: '/model',
     name: 'Model',
     component: () => import('@/views/product/model/list/Index.vue'),
     meta: {
       title: '型号列表',
+      keepAlive: true,
     },
   },
   {
-    path: '/model/list',
-    name: 'Model',
-    component: () => import('@/views/product/model/list/Index.vue'),
+    path: '/model/add',
+    name: 'AddModel',
+    component: () => import('@/views/product/model/add/Index.vue'),
     meta: {
-      title: '型号列表',
+      title: '新增型号',
     },
   },
   {
@@ -61,22 +64,6 @@ export default [
     component: () => import('@/views/product/model-version/add/Index.vue'),
     meta: {
       title: '新增型号版本',
-    },
-  },
-  {
-    path: '/model',
-    name: 'Model',
-    component: () => import('@/views/product/model/list/Index.vue'),
-    meta: {
-      title: '型号列表',
-    },
-  },
-  {
-    path: '/model/add',
-    name: 'AddModel',
-    component: () => import('@/views/product/model/add/Index.vue'),
-    meta: {
-      title: '新增型号',
     },
   },
 ]

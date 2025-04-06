@@ -7,10 +7,20 @@
         :prop="field.prop"
         :label="field.label"
       >
+        <template v-if="field.component === 'cascader'">
+          <ElCascader
+            clearable
+            :modelValue="form[field.prop]"
+            @update:modelValue="updateModelValue($event, field)"
+            v-bind="field.config"
+          />
+        </template>
         <component
+          v-else
           :is="
             typeof field.component === 'string' ? componentMap[field.component] : field.component
           "
+          clearable
           v-bind="field.config"
           :modelValue="form[field.prop]"
           @update:modelValue="updateModelValue($event, field)"
@@ -46,6 +56,7 @@
     ElDatePicker,
     ElInput,
     ElUpload,
+    ElCascader,
   } from 'element-plus'
   // import mock from './mock'
 
@@ -56,6 +67,7 @@
     datePicker: ElDatePicker,
     select: ElSelect,
     upload: ElUpload,
+    cascader: ElCascader,
   }
   const slotComponentMap = {
     radio: ElRadio,
