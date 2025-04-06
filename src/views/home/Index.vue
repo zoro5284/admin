@@ -4,14 +4,14 @@
   <!-- <div class="home-page">BTN</div> -->
 
   <!-- <Table :data="tableData" :columns="tableColumns" /> -->
-  <!-- <Form v-model:form="formObj" /> -->
+  <!-- <Form v-model:form="formObj" :schema="schema" /> -->
   <!-- <Upload /> -->
 
-  <!-- <Editor v-model="content" />
-  <div class="content" v-html="content"></div> -->
+  <!-- <Editor v-model="content" /> -->
+  <!-- <div class="content" v-html="content"></div> -->
 </template>
 <script setup>
-  import { ref, watch } from 'vue'
+  import { ref, watch, watchEffect } from 'vue'
   import Form from '@/components/form'
   import Editor from '@/components/editor'
   import Upload from '@/components/upload'
@@ -19,6 +19,11 @@
   import { mockData as tableData, mockCols as tableColumns } from '@/mock/table'
   import ImageMarkder from '@/components/image-marker'
   import testPng from '@/assets/img/test.png'
+  import schema from '@/components/form/schema'
+  import ColorSet from '@/unit/ColorSet.vue'
+  import CustomSet from '@/unit/CustomSet.vue'
+  import PriceSet from '@/unit/PriceSet.vue'
+
   const position = ref([50, 50])
   watch(position, (val) => {
     console.log('position', val)

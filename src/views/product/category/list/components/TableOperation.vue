@@ -20,4 +20,4 @@
   const isShowStart = computed(() => props.state === 2)
   const isShowStop = computed(() => props.state === 0)
 </script>
-<style lang="less" scoped></style>
+<style lang="scss" scoped></style>

@@ -110,4 +110,14 @@ export default [
       autoUpload: false,
     },
   },
+  {
+    prop: 'tinymce',
+    label: '富文本',
+    component: 'editor',
+    config: {
+      config: {
+        width: 'auto',
+      },
+    },
+  },
 ]
