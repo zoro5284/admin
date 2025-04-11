@@ -29,14 +29,12 @@
         selectable
       />
     </el-card>
-    <SeriesDialog v-model:visible="dialogVisible" :brand-info="currentBrandInfo" />
   </div>
 </template>
 <script setup>
   import { ref, watch, reactive, computed, onMounted, h } from 'vue'
   import { CommonSearch, Table, Form } from '@/components'
   import TableOperation from './components/TableOperation.vue'
-  import SeriesDialog from './components/SeriesDialog.vue'
   import { useRouter } from 'vue-router'
   import useApi from '@/api'
   import dayjs from 'dayjs'
@@ -45,9 +43,6 @@
 
   const router = useRouter()
   const api = useApi()
-
-  const dialogVisible = ref(false)
-  const currentBrandInfo = ref({})
 
   // 搜索部分
   const searchSchema = [
@@ -158,16 +153,52 @@
     {
       label: '缩略图',
       prop: 'img',
+      columnRenderFn: ({ scope }) => {
+        const img = scope.row.img
+        return h('img', { style: { width: '60px', height: '60px' }, src: img })
+      },
     },
     {
-      prop: 'state',
-      label: '品牌状态',
+      label: '规格数量',
+      prop: 'specNum',
+    },
+    {
+      label: '所属型号',
+      prop: 'version',
+    },
+    {
+      label: '所属品牌',
+      prop: 'brand',
+    },
+    {
+      label: '在售状态',
+      columnRenderFn: ({ scope }) => {
+        const state = scope.row.state
+        if (state !== 0 && state !== 2) return h('span', null, '-')
+        const color = state === 0 ? '#09cd8a' : '#fa1919'
+        const text = state === 0 ? '在售' : '停售'
+
+        return h('span', { style: { color } }, text)
+      },
+    },
+    {
+      label: '参数配置',
+      columnRenderFn: ({ scope }) => {
+        const state = scope.row.state
+        if (state !== 0 && state !== 2) return h('span', null, '-')
+        const color = state === 0 ? '#09cd8a' : '#fa1919'
+        const text = state === 0 ? '已配置' : '未配置'
+
+        return h('span', { style: { color } }, text)
+      },
+    },
+    {
+      label: '版本状态',
       columnRenderFn: ({ scope }) => {
         const state = scope.row.state
         if (state !== 0 && state !== 2) return h('span', null, '-')
         const color = state === 0 ? '#09cd8a' : '#fa1919'
         const text = state === 0 ? '已启用' : '已停用'
-
         return h('span', { style: { color } }, text)
       },
     },
@@ -209,11 +240,6 @@
           onStart: () => {
             updateState(id, 0)
           },
-          // 系列按钮
-          onDetail: () => {
-            currentBrandInfo.value = scope.row
-            dialogVisible.value = true
-          },
           onDelete: () => {
             if (!id) return
             deleteBrand([id])
@@ -249,14 +275,14 @@
   const toAddPage = (id, row) => {
     if (!id) {
       router.push({
-        path: '/product/brand/add',
+        path: '/product/model-version/add',
       })
       return
     }
     router.push({
-      path: '/product/brand/add',
+      path: '/product/model-version/add',
       query: {
-        brandId: id,
+        modelVersionId: id,
       },
     })
   }
@@ -273,7 +299,7 @@
   const deleteBrand = async (list = []) => {
     await api.product.deleteBrand({ brandIdList: list }, { method: 'POST' })
     ElMessage({
-      message: '品牌删除成功',
+      message: '型号版本删除成功',
       type: 'success',
     })
     onSearch(true)

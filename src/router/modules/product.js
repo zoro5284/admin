@@ -51,7 +51,7 @@ export default [
     },
   },
   {
-    path: '/modelVersion/list',
+    path: '/model-version',
     name: 'ModelVersion',
     component: () => import('@/views/product/model-version/list/Index.vue'),
     meta: {
@@ -59,7 +59,7 @@ export default [
     },
   },
   {
-    path: '/modelVersion/add',
+    path: '/model-version/add',
     name: 'AddModelVersion',
     component: () => import('@/views/product/model-version/add/Index.vue'),
     meta: {

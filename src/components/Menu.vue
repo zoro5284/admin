@@ -52,6 +52,10 @@
           title: '型号管理',
           index: '/product/model',
         },
+        {
+          title: '型号版本管理',
+          index: '/product/model-version',
+        },
       ],
     },
   ]

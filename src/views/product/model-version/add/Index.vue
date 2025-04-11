@@ -9,7 +9,12 @@
     <PriceSet :color-list="colorList" :property-list="propertyList" v-model:priceList="priceList" />
     <el-card>
       <div slot="header">图文描述</div>
-      <Form v-model="introductionForm" :schema="schema2" :footer-visible="false" />
+      <Form
+        ref="introductionFormRef"
+        v-model="introductionForm"
+        :schema="schema2"
+        :footer-visible="false"
+      />
     </el-card>
     <div style="margin-top: 38px; margin-left: 38px">
       <el-button type="primary" :style="{ marginLeft: '40px' }" @click="onSubmit">提交</el-button>
@@ -27,6 +32,7 @@
   import { isEqual, omit } from 'lodash-es'
   import schema from '@/components/form/schema'
   import router from '@/router'
+  import { ElMessage } from 'element-plus'
 
   // 基本信息处理
   const baseFormRef = ref(null)
@@ -158,14 +164,23 @@
 
   const onSubmit = async () => {
     await baseForm.value.validateForm()
-    await validatePriceTable()
+    try {
+      await validatePriceTable()
+    } catch (error) {
+      ElMessage({
+        message: '请填写所有价格属性',
+        type: 'warning',
+      })
+      return
+    }
     await introductionFormRef.value.validateForm()
     // 提交接口
     console.log('submit')
   }
 
   const onCannel = () => {
-    router.push('/product/model-version/list')
+    router.go(-1)
+    // router.push('/product/model-version/list')
   }
 
   watchEffect(() => {
